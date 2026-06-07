@@ -3005,6 +3005,8 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
 
 <!-- ===== ACE UI REFRESH (corporate/minimal theme) ===== -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://spoqa.github.io" crossorigin>
+<link rel="stylesheet" href="https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style id="ace-ui-refresh">
   :root{
@@ -3022,7 +3024,7 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
     --accent-soft:#fdeef0;
   }
   html, body{
-    font-family:'Pretendard Variable','Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-family:'Spoqa Han Sans Neo','Pretendard Variable','Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     background:var(--bg); color:var(--text);
     -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     letter-spacing:-0.006em;
@@ -3094,7 +3096,7 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
   .io-btn{ border-color:transparent; background:#eef1f6; }
   .io-btn:hover:not(:disabled){ background:var(--ace-red); color:#fff; }
   .main{ padding:30px 44px 56px; }
-  .btn{ border-radius:9px; }
+  .btn{ border-radius:9px; white-space:nowrap; }
   input[type=text],input[type=date],input[type=number],input[type=search],input[type=password],input[type=email],select,textarea{ border-radius:9px; }
   .lov-card{ border:none; border-radius:16px; box-shadow:0 1px 2px rgba(20,27,38,.04), 0 8px 24px rgba(20,27,38,.05); }
   .lov-card-header{ background:#1c2735; }
@@ -3104,6 +3106,235 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
   .pm-pill{ border-radius:20px; }
   .modal{ border-radius:16px; }
   table th{ border-color:var(--border) !important; }
+
+  /* ===== LOGIN PAGE ===== */
+  #aceLogin{ position:fixed; inset:0; z-index:2147483647; display:flex; background:#0e1620; color:#fff;
+    font-family:'Spoqa Han Sans Neo','Pretendard Variable',sans-serif; }
+  #aceLogin .ace-login-brand{ flex:1.15; padding:60px 64px; display:flex; flex-direction:column; justify-content:space-between;
+    position:relative; overflow:hidden;
+    background:radial-gradient(120% 90% at 82% 12%, rgba(200,22,29,.30) 0%, rgba(200,22,29,0) 46%), linear-gradient(135deg,#0c131c 0%,#15202e 58%,#1d2735 100%); }
+  #aceLogin .ace-login-brand::after{ content:""; position:absolute; right:-160px; bottom:-160px; width:460px; height:460px; border-radius:50%;
+    background:radial-gradient(circle, rgba(200,22,29,.22), transparent 65%); filter:blur(8px); }
+  #aceLogin .ace-login-logo{ position:relative; z-index:1; }
+  #aceLogin .ace-login-logo .brand-text .name{ color:#fff; }
+  #aceLogin .ace-login-hero{ position:relative; z-index:1; }
+  #aceLogin .ace-login-eyebrow{ font-size:12.5px; letter-spacing:.18em; color:#8fa0b4; font-weight:700; text-transform:uppercase; margin-bottom:18px; }
+  #aceLogin .ace-login-hero h1{ font-size:44px; font-weight:800; line-height:1.22; letter-spacing:-0.035em; }
+  #aceLogin .ace-login-hero .tag{ font-size:16.5px; line-height:1.75; color:#aeb9c8; margin-top:20px; max-width:460px; font-weight:400; }
+  #aceLogin .ace-login-foot{ position:relative; z-index:1; font-size:11.5px; color:#6f7d8e; letter-spacing:.04em; }
+  #aceLogin .ace-login-form{ flex:.85; background:#fff; display:flex; align-items:center; justify-content:center; padding:40px; }
+  #aceLogin .ace-login-card{ width:340px; max-width:100%; }
+  #aceLogin .ace-login-title{ font-size:26px; font-weight:800; color:#151b24; letter-spacing:-0.03em; }
+  #aceLogin .ace-login-sub{ font-size:13px; color:#94a0b0; margin:6px 0 30px; }
+  #aceLogin .ace-login-label{ display:block; font-size:12px; font-weight:700; color:#4a5563; margin:16px 0 7px; }
+  #aceLogin .ace-login-input{ width:100%; box-sizing:border-box; padding:13px 15px; border:1.5px solid #e1e6ee; border-radius:11px;
+    font-size:15px; outline:none; transition:border-color .15s, box-shadow .15s; font-family:inherit; background:#fbfcfe; color:#151b24; }
+  #aceLogin .ace-login-input:focus{ border-color:var(--ace-red); box-shadow:0 0 0 4px rgba(200,22,29,.10); background:#fff; }
+  #aceLogin .ace-login-err{ color:#c8161d; font-size:12px; min-height:17px; margin:11px 2px 0; }
+  #aceLogin .ace-login-btn{ width:100%; margin-top:14px; padding:14px; border:none; border-radius:11px; cursor:pointer;
+    background:var(--ace-red); color:#fff; font-size:15px; font-weight:700; font-family:inherit; letter-spacing:.01em;
+    box-shadow:0 6px 18px rgba(200,22,29,.28); transition:transform .12s, box-shadow .15s, background .15s; }
+  #aceLogin .ace-login-btn:hover{ background:var(--ace-red-dark); transform:translateY(-1px); box-shadow:0 10px 26px rgba(200,22,29,.34); }
+  #aceLogin .ace-login-btn:active{ transform:translateY(0); }
+  @media(max-width:860px){
+    #aceLogin{ flex-direction:column; }
+    #aceLogin .ace-login-brand{ flex:none; padding:34px 26px 26px; gap:18px; }
+    #aceLogin .ace-login-brand::after{ width:280px; height:280px; right:-120px; bottom:auto; top:-120px; }
+    #aceLogin .ace-login-eyebrow{ margin-bottom:10px; }
+    #aceLogin .ace-login-hero h1{ font-size:27px; }
+    #aceLogin .ace-login-hero .tag{ font-size:14px; margin-top:12px; }
+    #aceLogin .ace-login-foot{ display:none; }
+    #aceLogin .ace-login-form{ flex:1; padding:28px 22px; align-items:flex-start; }
+    #aceLogin .ace-login-card{ width:100%; }
+  }
+
+  /* login: remember + reset */
+  #aceLogin .ace-login-row{ display:flex; align-items:center; margin-top:16px; }
+  #aceLogin .ace-login-remember{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:#5e6b7b; cursor:pointer; user-select:none; }
+  #aceLogin .ace-login-remember input{ width:16px; height:16px; accent-color:var(--ace-red); cursor:pointer; }
+  #aceLogin .ace-login-reset{ display:flex; align-items:center; justify-content:center; gap:6px; width:100%; margin-top:18px;
+    background:none; border:none; cursor:pointer; color:#b3bcc8; font-size:12px; font-family:inherit; transition:color .15s; }
+  #aceLogin .ace-login-reset:hover{ color:var(--ace-red); }
+  #aceLogin .ace-login-reset svg{ width:13px; height:13px; stroke:currentColor; }
+
+  /* ===== MEGA MENU (대메뉴 호버 드롭다운) ===== */
+  .cat-nav{ position:relative; z-index:50; background:var(--ace-black); }
+  .mega-menu{ position:absolute; top:100%; left:0; right:0; z-index:60;
+    background:linear-gradient(180deg, rgba(11,17,25,.985) 0%, rgba(23,31,43,.985) 100%);
+    box-shadow:0 26px 50px rgba(0,0,0,.42); overflow:hidden;
+    max-height:0; opacity:0; transition:max-height .34s cubic-bezier(.4,0,.2,1), opacity .22s ease; pointer-events:none; }
+  .mega-menu.open{ max-height:62vh; opacity:1; pointer-events:auto; }
+  .mega-menu-inner{ max-width:1560px; margin:0 auto; padding:24px 44px 30px; columns:4 210px; column-gap:34px; }
+  .mega-link{ display:block; color:#c5cdd9; font-size:15px; font-weight:500; padding:10px 8px 10px 13px; cursor:pointer;
+    letter-spacing:-0.01em; border-left:2px solid transparent; transition:color .15s, border-color .15s, background .15s; break-inside:avoid; border-radius:0 6px 6px 0; }
+  .mega-link:hover{ color:#fff; border-left-color:var(--ace-red); background:rgba(255,255,255,.05); }
+  .cat-btn.mega-hot{ color:#fff !important; background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(200,22,29,.20)) !important; }
+  @media(hover:none){ .mega-menu{ display:none !important; } }
+
+  /* ===== 발주 현황 대시보드 (news-front) ===== */
+  #tab-po-dash .pod-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+  #tab-po-dash .pod-head h2{ font-size:24px; font-weight:800; letter-spacing:-0.035em; }
+  #tab-po-dash .pod-head p{ font-size:12.5px; color:var(--text-muted); margin-top:4px; }
+  #tab-po-dash .pod-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  #tab-po-dash .pod-card{ background:#fff; border-radius:18px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 10px 30px rgba(20,27,38,.06);
+    padding:22px 24px; display:flex; flex-direction:column; min-height:170px; }
+  #tab-po-dash .pod-card.feature{ grid-column:1 / -1; }
+  #tab-po-dash .pod-eyebrow{ font-size:10.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--ace-red); }
+  #tab-po-dash .pod-title{ font-size:17px; font-weight:800; margin:5px 0 14px; letter-spacing:-0.02em; }
+  #tab-po-dash .pod-kpi{ font-size:30px; font-weight:800; letter-spacing:-0.03em; line-height:1.1; }
+  #tab-po-dash .pod-kpi small{ font-size:14px; font-weight:700; color:var(--text-dim); margin-left:3px; }
+  #tab-po-dash .pod-kpis{ display:flex; gap:30px; flex-wrap:wrap; }
+  #tab-po-dash .pod-sub{ font-size:12px; color:var(--text-muted); margin-top:6px; }
+  #tab-po-dash .pod-goto button{ margin-top:18px; align-self:flex-start; background:var(--bg-elev); border:1px solid var(--border); color:var(--text);
+    border-radius:9px; padding:9px 16px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; transition:all .15s; }
+  #tab-po-dash .pod-goto button:hover{ background:var(--ace-red); border-color:var(--ace-red); color:#fff; transform:translateX(2px); }
+  #tab-po-dash .pod-goto button svg{ width:14px; height:14px; stroke:currentColor; }
+  #tab-po-dash .pod-bars{ display:flex; align-items:flex-end; gap:8px; height:170px; margin:18px 0 22px; }
+  #tab-po-dash .pod-bar{ flex:1; background:linear-gradient(180deg,#e0555a,#c8161d); border-radius:6px 6px 0 0; min-height:4px; position:relative; transition:filter .15s; }
+  #tab-po-dash .pod-bar:hover{ filter:brightness(1.08); }
+  #tab-po-dash .pod-bar b{ position:absolute; top:-19px; left:-6px; right:-6px; text-align:center; font-size:10px; font-weight:700; color:var(--text-dim); }
+  #tab-po-dash .pod-bar em{ position:absolute; bottom:-20px; left:-6px; right:-6px; text-align:center; font-size:10px; color:var(--text-muted); font-style:normal; }
+  @media(max-width:980px){ #tab-po-dash .pod-grid{ grid-template-columns:1fr; } }
+  /* 모닝 브리핑 */
+  #tab-po-dash .pod-brief{ background:linear-gradient(135deg,#10151e 0%,#1b2433 58%,#2a1418 100%); color:#fff; border-radius:20px; padding:28px 30px; margin-bottom:20px; box-shadow:0 14px 36px rgba(20,27,38,.18); position:relative; overflow:hidden; }
+  #tab-po-dash .pod-brief::after{ content:""; position:absolute; right:-120px; top:-120px; width:320px; height:320px; border-radius:50%; background:radial-gradient(circle, rgba(200,22,29,.22), transparent 65%); }
+  #tab-po-dash .pod-brief-eyebrow{ font-size:11px; font-weight:800; letter-spacing:.14em; color:#e6909494; color:#e89a9e; text-transform:uppercase; position:relative; }
+  #tab-po-dash .pod-brief h3{ font-size:23px; font-weight:800; letter-spacing:-0.03em; margin-top:7px; position:relative; }
+  #tab-po-dash .pod-brief .sub{ font-size:13px; color:#aeb9c8; margin-top:8px; max-width:600px; line-height:1.65; position:relative; }
+  #tab-po-dash .pod-brief-kpis{ display:flex; gap:36px; flex-wrap:wrap; margin-top:22px; position:relative; }
+  #tab-po-dash .pod-brief-kpi .k-lbl{ font-size:11px; color:#9aa6b6; font-weight:600; }
+  #tab-po-dash .pod-brief-kpi .k-val{ font-size:29px; font-weight:800; letter-spacing:-0.03em; margin-top:4px; }
+  #tab-po-dash .pod-brief-kpi .k-val.red{ color:#ff6b71; }
+  #tab-po-dash .pod-asp{ background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16); border-radius:8px; color:#fff; padding:4px 8px; width:74px; font-size:14px; font-weight:700; outline:none; font-family:inherit; }
+  #tab-po-dash .pod-brief-list{ margin-top:22px; border-top:1px solid rgba(255,255,255,.1); padding-top:8px; position:relative; }
+  #tab-po-dash .pod-brief-item{ display:grid; grid-template-columns:1.5fr .7fr 1fr 1fr; gap:14px; padding:11px 4px; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px; align-items:center; }
+  #tab-po-dash .pod-brief-item:last-child{ border-bottom:none; }
+  #tab-po-dash .pod-brief-item .proj{ font-weight:700; }
+  #tab-po-dash .pod-brief-item .cust{ color:#94a0b2; font-size:11.5px; }
+  #tab-po-dash .pod-brief-item .qty{ color:#7fe0a0; font-weight:700; }
+  #tab-po-dash .pod-brief-item .fca{ color:#cdd5e0; }
+  #tab-po-dash .pod-brief-item .typ{ font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(255,255,255,.12); display:inline-block; }
+  @media(max-width:680px){ #tab-po-dash .pod-brief-item{ grid-template-columns:1fr 1fr; gap:4px 10px; } }
+
+  /* ===== UI 스캐폴드 공통 (견적/기준정보/ERP) ===== */
+  .scaf{ max-width:1100px; }
+  .scaf-note{ background:#fff7ed; border:1px solid #f3d9b0; color:#9a6212; border-radius:12px; padding:12px 16px; font-size:12.5px; margin-bottom:18px; }
+  .scaf-card{ background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 8px 24px rgba(20,27,38,.05); padding:22px 24px; margin-bottom:18px; }
+  .scaf-card h3{ font-size:16px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+  .scaf-card .desc{ font-size:12.5px; color:var(--text-muted); margin-bottom:16px; }
+  .scaf-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px 18px; }
+  .scaf-f{ display:flex; flex-direction:column; gap:5px; }
+  .scaf-f label{ font-size:11.5px; font-weight:700; color:var(--text-dim); }
+  .scaf-f input, .scaf-f select{ padding:10px 12px; border:1px solid var(--border-strong); border-radius:9px; font-family:inherit; font-size:13px; outline:none; background:#fbfcfe; }
+  .scaf-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .scaf-table th{ background:#f3f5f9; text-align:left; padding:10px 12px; font-size:11px; font-weight:700; color:var(--text-dim); border-bottom:1px solid var(--border); white-space:nowrap; }
+  .scaf-table td{ padding:10px 12px; border-bottom:1px solid #f1f3f7; }
+  .scaf-table tr.total td{ font-weight:800; background:#fafbfd; border-top:2px solid var(--border-strong); }
+  .scaf-flow{ display:flex; align-items:stretch; gap:12px; flex-wrap:wrap; }
+  .scaf-step{ flex:1; min-width:150px; background:var(--bg-elev); border:1px solid var(--border); border-radius:12px; padding:14px 16px; position:relative; }
+  .scaf-step .n{ width:24px; height:24px; border-radius:50%; background:var(--ace-red); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-bottom:8px; }
+  .scaf-step h4{ font-size:13px; font-weight:800; margin-bottom:3px; }
+  .scaf-step p{ font-size:11.5px; color:var(--text-muted); line-height:1.5; }
+  .scaf-badge{ display:inline-block; font-size:10px; font-weight:700; padding:3px 9px; border-radius:10px; background:#eef1f8; color:#3050b8; margin-left:8px; vertical-align:middle; }
+
+  /* ===== MPS 현황 ===== */
+  #tab-mps-status .mps-wrap{ background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 8px 24px rgba(20,27,38,.05); overflow:auto; max-height:calc(100vh - 300px); }
+  #tab-mps-status table{ width:100%; border-collapse:collapse; font-size:12px; }
+  #tab-mps-status th{ position:sticky; top:0; background:#1c2735; color:#fff; padding:10px 12px; text-align:left; font-size:10.5px; font-weight:600; white-space:nowrap; }
+  #tab-mps-status td{ padding:9px 12px; border-bottom:1px solid #f0f2f6; white-space:nowrap; }
+  #tab-mps-status tbody tr:hover{ background:#f7f9fc; }
+  #tab-mps-status .mps-st{ display:inline-block; padding:2px 9px; border-radius:11px; font-size:10px; font-weight:700; }
+  #tab-mps-status .mps-st.done{ background:#e8f3ed; color:#127a3e; }
+  #tab-mps-status .mps-st.prog{ background:#e7f1ff; color:#1f5fd0; }
+  #tab-mps-status .mps-st.pend{ background:#fff1e0; color:#bb6a10; }
+  #tab-mps-status .mps-st.plan{ background:#eef1f6; color:#7a8699; }
+
+  /* ===== 조직 · 권한 관리 ===== */
+  #tab-org-perms .op-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+  #tab-org-perms .op-head h2{ font-size:22px; font-weight:800; letter-spacing:-0.03em; }
+  #tab-org-perms .op-head p{ font-size:12.5px; color:var(--text-muted); margin-top:4px; }
+  #tab-org-perms .op-layout{ display:grid; grid-template-columns:320px 1fr; gap:18px; align-items:start; }
+  #tab-org-perms .op-side{ background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 8px 24px rgba(20,27,38,.05); padding:14px; }
+  #tab-org-perms .op-dept{ margin-bottom:8px; }
+  #tab-org-perms .op-dept-h{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:10px; background:var(--bg-elev); font-weight:800; font-size:13px; }
+  #tab-org-perms .op-dept-h .cnt{ font-size:11px; color:var(--text-muted); font-weight:600; }
+  #tab-org-perms .op-member{ display:flex; align-items:center; justify-content:space-between; padding:9px 12px; margin:4px 0 4px 8px; border-radius:9px; cursor:pointer; font-size:13px; transition:background .12s; }
+  #tab-org-perms .op-member:hover{ background:#f5f8fc; }
+  #tab-org-perms .op-member.sel{ background:var(--ace-red); color:#fff; }
+  #tab-org-perms .op-member .role{ font-size:11px; color:var(--text-muted); margin-left:4px; }
+  #tab-org-perms .op-member.sel .role{ color:rgba(255,255,255,.85); }
+  #tab-org-perms .op-addmem{ margin:2px 0 6px 8px; font-size:11.5px; color:var(--ace-red); cursor:pointer; padding:5px 12px; font-weight:600; }
+  #tab-org-perms .op-main{ background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 8px 24px rgba(20,27,38,.05); padding:22px 24px; min-height:320px; }
+  #tab-org-perms .op-empty{ color:var(--text-muted); text-align:center; padding:64px 20px; font-size:13px; }
+  #tab-org-perms .op-mtitle{ font-size:18px; font-weight:800; letter-spacing:-0.02em; }
+  #tab-org-perms .op-msub{ font-size:12px; color:var(--text-muted); margin:4px 0 16px; }
+  #tab-org-perms table.op-grid{ width:100%; border-collapse:collapse; font-size:13px; }
+  #tab-org-perms .op-grid th{ text-align:left; padding:10px 10px; font-size:11px; color:var(--text-dim); border-bottom:1px solid var(--border); }
+  #tab-org-perms .op-grid th.c{ text-align:center; width:84px; }
+  #tab-org-perms .op-grid td{ padding:9px 10px; border-bottom:1px solid #f1f3f7; }
+  #tab-org-perms .op-grid td.c{ text-align:center; }
+  #tab-org-perms .op-grid input{ width:17px; height:17px; accent-color:var(--ace-red); cursor:pointer; }
+  #tab-org-perms .op-actions{ margin-top:18px; display:flex; gap:8px; align-items:center; }
+  @media(max-width:860px){ #tab-org-perms .op-layout{ grid-template-columns:1fr; } }
+
+  /* ===== PO 변동현황 ===== */
+  #tab-po-changes .poc-summary{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+  #tab-po-changes .poc-sumcard{ background:#fff; border-radius:14px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 6px 18px rgba(20,27,38,.05); padding:16px 20px; flex:1; min-width:150px; }
+  #tab-po-changes .poc-sumcard .lbl{ font-size:11px; color:var(--text-muted); font-weight:700; }
+  #tab-po-changes .poc-sumcard .val{ font-size:26px; font-weight:800; letter-spacing:-0.03em; margin-top:4px; }
+  #tab-po-changes .poc-toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+  #tab-po-changes .poc-wrap{ background:#fff; border-radius:16px; box-shadow:0 1px 2px rgba(20,27,38,.04),0 8px 24px rgba(20,27,38,.05); overflow:auto; }
+  #tab-po-changes table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  #tab-po-changes th{ position:sticky; top:0; background:#1c2735; color:#fff; padding:11px 13px; text-align:left; font-size:11px; font-weight:600; white-space:nowrap; }
+  #tab-po-changes td{ padding:11px 13px; border-bottom:1px solid #f0f2f6; white-space:nowrap; }
+  #tab-po-changes tbody tr{ cursor:pointer; }
+  #tab-po-changes tbody tr:hover{ background:#fff8ef; }
+  #tab-po-changes .poc-badge{ display:inline-block; padding:2px 9px; border-radius:11px; font-size:10.5px; font-weight:700; }
+  #tab-po-changes .poc-badge.new{ background:#e7f1ff; color:#1f5fd0; }
+  #tab-po-changes .poc-badge.add{ background:#e9f6ec; color:#1a7a3e; }
+  #tab-po-changes .poc-badge.chg{ background:#fff1e0; color:#bb6a10; }
+  #tab-po-changes .poc-delta-up{ color:#1a7a3e; font-weight:700; }
+  #tab-po-changes .poc-empty{ text-align:center; padding:56px 20px; color:var(--text-muted); }
+
+  /* ===== APP FOOTER + LOGOUT ===== */
+  .app-footer{ background:#1b212a; color:#8a93a0; }
+  .app-footer-inner{ max-width:1560px; margin:0 auto; padding:26px 44px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .app-footer-brand{ display:flex; align-items:center; gap:16px; }
+  .app-footer-logo{ font-weight:800; color:#fff; font-size:18px; letter-spacing:-0.01em; }
+  .app-footer-logo span{ font-weight:400; font-size:11px; letter-spacing:.16em; color:#aab3c0; margin-left:2px; }
+  .app-footer-info{ font-size:11.5px; line-height:1.95; color:#828b98; }
+  .app-footer-info strong{ color:#c3cad3; font-weight:700; letter-spacing:.03em; margin-right:5px; }
+  .app-footer-info .copy{ color:#646d79; margin-top:5px; font-size:11px; }
+  .app-logout-btn{ background:transparent; border:1px solid #3b4552; color:#cbd2db; padding:10px 22px; border-radius:9px;
+    font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all .15s; display:inline-flex; align-items:center; gap:7px; }
+  .app-logout-btn:hover{ border-color:var(--ace-red); background:var(--ace-red); color:#fff; }
+  .app-logout-btn svg{ width:15px; height:15px; stroke:currentColor; }
+
+  /* ===== MOBILE RESPONSIVE (web-app) ===== */
+  @media(max-width:768px){
+    .app-footer-inner{ padding:22px 16px; flex-direction:column; align-items:flex-start; gap:16px; }
+    .app-logout-btn{ width:100%; justify-content:center; }
+    .top-bar-inner{ padding:11px 16px; }
+    .brand-logo-img{ height:30px; }
+    .brand-text .name{ font-size:13.5px; }
+    .brand-text .sub{ display:none; }
+    .page-title-inner{ padding:18px 16px 12px; }
+    .page-title h1{ font-size:19px; letter-spacing:-0.03em; }
+    .page-title p{ font-size:11.5px; }
+    .cat-bar{ padding:0 8px; }
+    .cat-btn{ padding:13px 14px; font-size:12.5px; }
+    .cat-btn.cat-utility, .cat-btn.cat-utility.active{ padding:13px 12px; }
+    .tab-bar{ padding:4px 8px 0; }
+    .tab{ padding:12px 13px; font-size:12.5px; }
+    .io-bar{ padding:10px 16px 2px; gap:6px; }
+    .main{ padding:18px 16px 48px; }
+    .btn{ padding:10px 16px; font-size:12.5px; }
+    .modal{ max-width:96vw; }
+    /* 2단 그리드는 1단으로 */
+    [style*="grid-template-columns:repeat(2"],[style*="grid-template-columns: repeat(2"]{ grid-template-columns:1fr !important; }
+    .pm-field-grid{ grid-template-columns:1fr; }
+    .ace-view-banner{ font-size:10.5px; padding:6px 8px; }
+  }
 </style>
 </head>
 <body>
@@ -3138,23 +3369,31 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
 </div>
 
 <!-- 1차 카테고리 (대분류) -->
+<div class="cat-nav">
 <div class="cat-bar">
+  <button class="cat-btn active" data-cat="dash">대시보드</button>
   <button class="cat-btn" data-cat="po">발주</button>
-  <button class="cat-btn active" data-cat="sales">매출</button>
+  <button class="cat-btn" data-cat="sales">매출</button>
   <button class="cat-btn" data-cat="production">생산</button>
   <button class="cat-btn" data-cat="material">자재</button>
   <button class="cat-btn" data-cat="logistics">물류</button>
   <button class="cat-btn" data-cat="receivables">채권</button>
   <button class="cat-btn" data-cat="processmap">프로세스맵</button>
+  <button class="cat-btn" data-cat="utility">설정</button>
   <div style="flex:1"></div>
-  <button class="cat-btn cat-utility" data-cat="utility">항목/권한</button>
+</div>
+<div class="mega-menu" id="megaMenu"><div class="mega-menu-inner" id="megaMenuInner"></div></div>
 </div>
 
 <!-- 2차 서브탭 (카테고리별 표시) -->
 <div class="tab-bar">
+  <!-- 대시보드 (메인) -->
+  <button class="tab active cat-visible" data-tab="po-dash" data-cat="dash">현황 대시보드</button>
+  <button class="tab cat-visible" data-tab="po-changes" data-cat="dash">발주 변동현황</button>
   <!-- 매출관리 -->
-  <button class="tab active cat-visible" data-tab="dashboard" data-cat="sales"> 매출실적대시보드</button>
-  <button class="tab cat-visible" data-tab="weekly" data-cat="sales"> 매출실적관리</button>
+  <button class="tab" data-tab="dashboard" data-cat="sales"> 매출실적대시보드</button>
+  <button class="tab" data-tab="weekly" data-cat="sales"> 매출실적관리</button>
+  <button class="tab" data-tab="quote" data-cat="sales">제품 견적</button>
   <!-- 발주관리 (구 발주서관리) -->
   <button class="tab" data-tab="convert" data-cat="po">
     PO 변환
@@ -3172,6 +3411,7 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
   <button class="tab" data-tab="mps" data-cat="po"> EPC MPS</button>
   <!-- 생산관리 -->
   <button class="tab" data-tab="production" data-cat="production"> 생산 주간 현황</button>
+  <button class="tab" data-tab="mps-status" data-cat="production">MPS 현황</button>
   <!-- 자재관리 -->
   <button class="tab" data-tab="mat-master" data-cat="material"> 기준정보 (장납기 자재)</button>
   <button class="tab" data-tab="mat-inventory" data-cat="material"> 재고 현황</button>
@@ -3182,12 +3422,15 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
   <!-- 채권관리 -->
   <button class="tab" data-tab="ar-receivables" data-cat="receivables"> 미수채권</button>
   <button class="tab" data-tab="ar-invoices" data-cat="receivables"> 인보이스 관리</button>
+  <button class="tab" data-tab="erp-invoice" data-cat="receivables">ERP 인보이스</button>
   <!-- 프로세스맵 (독립) -->
   <button class="tab" data-tab="process-map" data-cat="processmap"> 프로세스맵</button>
   <!-- 유틸리티 (항목/권한) -->
   <button class="tab" data-tab="fx" data-cat="utility"> 환율 관리</button>
   <button class="tab" data-tab="lov" data-cat="utility">항목 관리 (LOV)</button>
   <button class="tab" data-tab="pjt-master" data-cat="utility"> PJT 정보관리 <span class="tab-count" id="pjtMasterCountBadge">0</span></button>
+  <button class="tab" data-tab="refdef" data-cat="utility">기준정보 정의</button>
+  <button class="tab" data-tab="org-perms" data-cat="utility">조직·권한 관리</button>
   <button class="tab" data-tab="outlook-alerts" data-cat="utility"> Outlook 알람 <span class="tab-count" id="outlookAlertCountBadge">0</span></button>
   <button class="tab" data-tab="cache" data-cat="utility"> 캐시 관리</button>
   <button class="tab admin-only-tab" data-tab="admin" id="adminTabBtn" data-cat="utility" style="display:none; background:#fef3e8; color:var(--ace-red); border:1px solid var(--ace-red);"> 권한 관리</button>
@@ -3197,6 +3440,170 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
 <div class="io-bar" id="ioBar"></div>
 
 <div class="main">
+
+<!-- TAB: 발주 현황 대시보드 -->
+<div class="tab-panel active" id="tab-po-dash">
+  <div class="pod-head">
+    <div>
+      <h2>현황 대시보드</h2>
+      <p>오늘의 발주·매출·생산·물류·채권 핵심 현황 요약</p>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);" id="podUpdated"></div>
+  </div>
+  <div id="podBrief"></div>
+  <div class="pod-grid" id="podGrid"></div>
+</div>
+
+<!-- TAB: 발주 변동현황 -->
+<div class="tab-panel" id="tab-po-changes">
+  <div class="poc-summary" id="pocSummary"></div>
+  <div class="poc-toolbar">
+    <div class="pm-search" style="flex:1;min-width:220px;position:relative;"><input type="text" id="pocSearch" placeholder="고객사 · 프로젝트 · 비고 검색..." oninput="renderPocTable()" style="width:100%;padding:9px 12px;border:1px solid var(--border-strong);border-radius:9px;font-family:inherit;font-size:13px;outline:none;"></div>
+    <button class="btn btn-primary" data-edit-only onclick="openPocEditor(-1)" style="padding:9px 16px;font-size:12.5px;">신규 입력</button>
+    <button class="btn btn-secondary" onclick="exportPoc()" style="padding:9px 14px;font-size:12.5px;">엑셀 내보내기</button>
+  </div>
+  <div class="poc-wrap" id="pocWrap"></div>
+</div>
+
+<!-- PO 변동현황 편집 Drawer -->
+<div class="pm-drawer-mask" id="pocDrawerMask" onclick="closePocDrawer()"></div>
+<div class="pm-drawer" id="pocDrawer">
+  <div class="pm-drawer-head">
+    <div><h3 id="pocDrawerTitle">발주 변동 입력</h3><div class="sub">신규 수취 · 추가 수취 · 변경 사항</div></div>
+    <button class="pm-drawer-close" onclick="closePocDrawer()">×</button>
+  </div>
+  <div class="pm-drawer-body">
+    <div class="pm-field-grid">
+      <div class="pm-field"><label>고객사</label><input type="text" id="poc-f-customer" list="poc-dl-customer" placeholder="On Energy / LG ..."><datalist id="poc-dl-customer"></datalist></div>
+      <div class="pm-field"><label>구분</label><select id="poc-f-type"><option value="신규">신규 수취</option><option value="추가">추가 수취</option><option value="변경">변경</option></select></div>
+      <div class="pm-field full"><label>프로젝트</label><input type="text" id="poc-f-project" placeholder="Childress PJT"></div>
+      <div class="pm-field"><label>기존 수량 (대)</label><input type="number" id="poc-f-prevQty" placeholder="0"></div>
+      <div class="pm-field"><label>신규 수량 (대)</label><input type="number" id="poc-f-newQty" placeholder="0"></div>
+      <div class="pm-field"><label>FCA</label><input type="text" id="poc-f-fca" placeholder="26년 9월 ~"></div>
+      <div class="pm-field"><label>접수일</label><input type="date" id="poc-f-date"></div>
+      <div class="pm-field full"><label>비고 (프로젝트명 변경 등)</label><textarea id="poc-f-note" placeholder="예: Canadian Solar Lupins 1 PJT → LG Royal Slope PJT"></textarea></div>
+    </div>
+  </div>
+  <div class="pm-drawer-foot">
+    <button class="btn btn-secondary" id="pocDeleteBtn" data-edit-only onclick="deletePocRecord()" style="padding:9px 14px;font-size:12px;border-color:var(--ace-red);color:var(--ace-red);display:none;">삭제</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-secondary" onclick="closePocDrawer()" style="padding:9px 16px;font-size:12px;">취소</button>
+    <button class="btn btn-primary" data-edit-only onclick="savePocRecord()" style="padding:9px 20px;font-size:12px;">저장</button>
+  </div>
+</div>
+
+<!-- TAB: 제품 견적 산출 (UI 시안) -->
+<div class="tab-panel" id="tab-quote">
+  <div class="scaf">
+    <div class="scaf-note">UI 시안입니다. 단가표·볼륨 할인 규칙을 주시면 실제 견적 계산 로직을 연결합니다.</div>
+    <div class="scaf-card">
+      <h3>제품 견적 산출 <span class="scaf-badge">항목별 · 볼륨별</span></h3>
+      <div class="desc">제품·옵션·수량을 선택하면 항목별/볼륨 구간별 단가로 견적을 산출합니다.</div>
+      <div class="scaf-grid">
+        <div class="scaf-f"><label>고객사</label><input type="text" placeholder="Fluence / EPC / LG ..."></div>
+        <div class="scaf-f"><label>제품군</label><select><option>GSP5000</option><option>GSP2000</option><option>Cube</option><option>Smartstack</option></select></div>
+        <div class="scaf-f"><label>Type / Hour-Rate</label><select><option>2HR</option><option>4HR</option><option>8HR</option></select></div>
+        <div class="scaf-f"><label>수량 (대)</label><input type="number" placeholder="100"></div>
+        <div class="scaf-f"><label>납품국가</label><input type="text" placeholder="US"></div>
+        <div class="scaf-f"><label>인코텀즈</label><select><option>FCA</option><option>DDP</option><option>CIF</option></select></div>
+      </div>
+      <div style="margin-top:16px;"><button class="btn btn-primary" style="padding:9px 18px;font-size:12.5px;" onclick="alert('견적 계산 로직은 단가표 제공 후 연결됩니다.')">견적 산출</button></div>
+    </div>
+    <div class="scaf-card">
+      <h3>견적 산출 결과 <span class="scaf-badge">예시</span></h3>
+      <table class="scaf-table">
+        <thead><tr><th>항목</th><th>사양</th><th>수량</th><th style="text-align:right;">단가</th><th style="text-align:right;">금액</th></tr></thead>
+        <tbody>
+          <tr><td>본품 (Enclosure)</td><td>GSP5000 V2 4H</td><td>100</td><td style="text-align:right;">— </td><td style="text-align:right;">—</td></tr>
+          <tr><td>Accessory</td><td>Cube to Cube / Aux</td><td>100</td><td style="text-align:right;">—</td><td style="text-align:right;">—</td></tr>
+          <tr><td>Spare Parts</td><td>Initial Spare</td><td>1 lot</td><td style="text-align:right;">—</td><td style="text-align:right;">—</td></tr>
+          <tr><td>물류 / 운송</td><td>FCA Haiphong</td><td>—</td><td style="text-align:right;">—</td><td style="text-align:right;">—</td></tr>
+          <tr class="total"><td colspan="4">합계 (볼륨 할인 적용 전)</td><td style="text-align:right;">—</td></tr>
+        </tbody>
+      </table>
+      <div class="desc" style="margin-top:12px;">※ 단가/할인율 미연결 — 단가표 제공 시 자동 계산</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: 기준정보 정의 (UI 시안) -->
+<div class="tab-panel" id="tab-refdef">
+  <div class="scaf">
+    <div class="scaf-note">UI 시안입니다. 기준정보 도메인이 추가로 정해지면 항목/검증 규칙을 연결합니다.</div>
+    <div class="scaf-card">
+      <h3>기준정보 정의 <span class="scaf-badge">Master Data</span></h3>
+      <div class="desc">제품·단가·고객·코드 등 플랫폼 전반에서 참조하는 기준정보를 한 곳에서 정의합니다. (LOV · PJT 정보관리와 연동)</div>
+      <div class="scaf-grid">
+        <div class="scaf-f"><label>기준정보 분류</label><select><option>제품 마스터</option><option>단가 마스터</option><option>고객 마스터</option><option>코드 (LOV)</option><option>BOM 기준</option></select></div>
+        <div class="scaf-f"><label>코드</label><input type="text" placeholder="GSP5000-V2-4H"></div>
+        <div class="scaf-f"><label>명칭</label><input type="text" placeholder="GSP5000 V2 4HR (US Cell)"></div>
+        <div class="scaf-f"><label>유효 시작일</label><input type="date"></div>
+      </div>
+      <div style="margin-top:16px;"><button class="btn btn-primary" data-edit-only style="padding:9px 18px;font-size:12.5px;" onclick="alert('기준정보 항목 스키마 확정 후 저장 로직을 연결합니다.')">등록</button></div>
+    </div>
+    <div class="scaf-card">
+      <h3>기준정보 목록 <span class="scaf-badge">예시</span></h3>
+      <table class="scaf-table">
+        <thead><tr><th>분류</th><th>코드</th><th>명칭</th><th>유효기간</th><th>연동</th></tr></thead>
+        <tbody>
+          <tr><td>제품 마스터</td><td>GSP5000-V2-4H</td><td>GSP5000 V2 4HR</td><td>2026-01-01 ~</td><td>LOV·PJT</td></tr>
+          <tr><td>단가 마스터</td><td>PRICE-GSP5K</td><td>GSP5000 기준단가</td><td>2026-01-01 ~</td><td>견적</td></tr>
+          <tr><td>코드 (LOV)</td><td>INCOTERMS</td><td>인코텀즈 목록</td><td>상시</td><td>전 화면</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: ERP 인보이스 인터페이스 (UI 시안) -->
+<div class="tab-panel" id="tab-erp-invoice">
+  <div class="scaf">
+    <div class="scaf-note">UI 시안입니다. ERP API 명세(엔드포인트·필드·인증)를 주시면 실제 호출/생성을 연결합니다.</div>
+    <div class="scaf-card">
+      <h3>ERP 인보이스 인터페이스 <span class="scaf-badge">생산 출하 → 채권</span></h3>
+      <div class="desc">생산 출하 후 고객 PO 수신 시, ERP 인터페이스 API를 호출하여 인보이스를 자동 생성하고 미수채권으로 등록합니다.</div>
+      <div class="scaf-flow">
+        <div class="scaf-step"><div class="n">1</div><h4>출하 완료</h4><p>생산 MPS 기준 Enclosure 출하 확정</p></div>
+        <div class="scaf-step"><div class="n">2</div><h4>고객 PO 수신</h4><p>고객 발주서/수량·금액 확인</p></div>
+        <div class="scaf-step"><div class="n">3</div><h4>ERP API 호출</h4><p>인터페이스로 인보이스 생성 요청</p></div>
+        <div class="scaf-step"><div class="n">4</div><h4>인보이스 생성</h4><p>인보이스 번호 수신 · 미수채권 등록</p></div>
+      </div>
+    </div>
+    <div class="scaf-card">
+      <h3>인보이스 생성 대기 <span class="scaf-badge">예시</span></h3>
+      <table class="scaf-table">
+        <thead><tr><th>프로젝트</th><th>고객사</th><th>출하수량</th><th>금액</th><th>상태</th><th>ERP 연동</th></tr></thead>
+        <tbody>
+          <tr><td>Childress PJT</td><td>On Energy</td><td>100 대</td><td>—</td><td>출하완료</td><td><button class="btn btn-secondary" data-edit-only style="padding:5px 12px;font-size:11px;" onclick="alert('ERP API 명세 연결 후 호출됩니다.')">인보이스 생성</button></td></tr>
+          <tr><td>Isabella PJT</td><td>LG</td><td>39 대</td><td>—</td><td>PO수신</td><td><button class="btn btn-secondary" data-edit-only style="padding:5px 12px;font-size:11px;" onclick="alert('ERP API 명세 연결 후 호출됩니다.')">인보이스 생성</button></td></tr>
+        </tbody>
+      </table>
+      <div class="desc" style="margin-top:12px;">※ ERP 엔드포인트/인증 미연결 — API 명세 제공 시 실제 생성·미수 등록 연동</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: MPS 현황 (EPC MPS) -->
+<div class="tab-panel" id="tab-mps-status">
+  <div class="poc-toolbar" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
+    <div style="flex:1;min-width:220px;"><input type="text" id="mpsSearch" placeholder="프로젝트 · 고객사 · PO# 검색..." oninput="renderMpsStatus()" style="width:100%;padding:9px 12px;border:1px solid var(--border-strong);border-radius:9px;font-family:inherit;font-size:13px;outline:none;"></div>
+    <div class="pm-pills" id="mpsPills" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    <button class="btn btn-secondary" onclick="exportMps()" style="padding:9px 14px;font-size:12.5px;">엑셀 내보내기</button>
+  </div>
+  <div class="mps-wrap" id="mpsWrap"></div>
+</div>
+
+<!-- TAB: 조직 · 권한 관리 -->
+<div class="tab-panel" id="tab-org-perms">
+  <div class="op-head">
+    <div><h2>조직 · 권한 관리</h2><p>부서 · 인원별로 프로그램 접근 권한(조회/편집)을 관리합니다.</p></div>
+    <button class="btn btn-primary" data-edit-only onclick="opAddDept()" style="padding:9px 16px;font-size:12.5px;">부서 추가</button>
+  </div>
+  <div class="op-layout">
+    <div class="op-side" id="opSide"></div>
+    <div class="op-main" id="opMain"></div>
+  </div>
+</div>
 
 <!-- TAB: CONVERT -->
 <div class="tab-panel" id="tab-convert">
@@ -3387,7 +3794,7 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
 </div>
 
 <!-- TAB: DASHBOARD (현황판) -->
-<div class="tab-panel active" id="tab-dashboard">
+<div class="tab-panel" id="tab-dashboard">
   <div class="dashboard-header">
     <div>
       <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 4px;"> 매출실적 현황판</h2>
@@ -8334,6 +8741,7 @@ window.resetPjtInfoTab = function() {
 // ============================================================
 // 카테고리별 디폴트 서브탭 (해당 카테고리 클릭 시 자동 선택)
 const CAT_DEFAULT_TAB = {
+  dash: 'po-dash',
   sales: 'dashboard',
   po: 'convert',
   production: 'production',
@@ -8346,7 +8754,7 @@ const CAT_DEFAULT_TAB = {
 
 function setActiveCategory(cat, autoClickDefault = true) {
   // utility 카테고리는 권한 체크 없이 통과 (LOV/admin)
-  if (cat !== 'utility' && currentM365User && typeof hasModuleView === 'function' && !hasModuleView(cat)) {
+  if (cat !== 'utility' && cat !== 'dash' && currentM365User && typeof hasModuleView === 'function' && !hasModuleView(cat)) {
     alert(`'${MODULE_LABELS[cat] || cat}' 모듈 조회 권한이 없습니다.\n어드민에게 권한 요청을 하세요.`);
     return;
   }
@@ -8390,6 +8798,10 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tab.dataset.cat) setActiveCategory(tab.dataset.cat, false);
     if (tab.dataset.tab === 'lov') renderLOV();
     if (tab.dataset.tab === 'pjt-master') openPjtMasterTab();
+    if (tab.dataset.tab === 'po-dash') openPoDash();
+    if (tab.dataset.tab === 'po-changes') openPocTab();
+    if (tab.dataset.tab === 'mps-status') openMpsStatus();
+    if (tab.dataset.tab === 'org-perms') openOrgPerms();
     if (tab.dataset.tab === 'fx') { if (typeof renderFxTable === 'function') renderFxTable(); }
     if (tab.dataset.tab === 'history') {
       searchHistory();
@@ -10433,7 +10845,8 @@ window.exportViewOnlyBuild = async function() {
 
     // 3) 부트스트랩 스크립트: 조회모드 플래그 + 데이터 시드 (앱 스크립트보다 먼저 head에서 실행)
     const lockJs = pw
-      ? 'window.__ACE_VIEW_PW__=' + JSON.stringify(pw) + ';' +
+      ? 'window.__ACE_VIEW_ID__=' + JSON.stringify(window.__ACE_VIEW_ID__ || '1991') + ';' +
+        'window.__ACE_VIEW_PW__=' + JSON.stringify(pw) + ';' +
         'document.documentElement.classList.add("ace-gate-locked");' +
         '(function(){var s=document.createElement("style");s.textContent="html.ace-gate-locked body{display:none!important}";document.documentElement.appendChild(s);})();'
       : '';
@@ -10471,7 +10884,7 @@ window.exportViewOnlyBuild = async function() {
 // 조회 전용 모드: 배너 표시 + 편집 UI 숨김 (암호 통과 후)
 function aceUnlockView() {
   document.documentElement.classList.remove('ace-gate-locked');
-  const g = document.getElementById('aceViewGate');
+  const g = document.getElementById('aceViewGate') || document.getElementById('aceLogin');
   if (g) g.remove();
   document.body.classList.add('ace-view-mode');
   if (!document.querySelector('.ace-view-banner')) {
@@ -10481,40 +10894,395 @@ function aceUnlockView() {
     banner.textContent = ' 조회 전용 (Read-only)' + d + ' — 데이터 수정은 반영되지 않습니다';
     document.body.insertAdjacentElement('afterbegin', banner);
   }
+  try { if (typeof openPoDash === 'function' && document.getElementById('tab-po-dash') && document.getElementById('tab-po-dash').classList.contains('active')) openPoDash(); } catch(e){}
 }
 
-// 조회 암호 게이트 (배포본에 암호가 설정된 경우)
+// 로그인 페이지 (배포본 진입 시 ID/PW 인증)
 function setupViewGate() {
   const pw = window.__ACE_VIEW_PW__;
   if (!pw) { aceUnlockView(); return; }
   if (sessionStorage.getItem('ace_view_authed') === '1') { aceUnlockView(); return; }
-  const gate = document.createElement('div');
-  gate.id = 'aceViewGate';
-  gate.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#1a1a1a;display:flex;align-items:center;justify-content:center;';
-  gate.innerHTML =
-    '<div style="background:#fff;border-radius:12px;padding:36px 34px;width:340px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.4);text-align:center;font-family:inherit;">' +
-      '<div style="font-size:30px;margin-bottom:8px;"></div>' +
-      '<div style="font-size:17px;font-weight:800;color:#1a1a1a;margin-bottom:4px;">ACE 통합 플랫폼</div>' +
-      '<div style="font-size:12px;color:#8d8a83;margin-bottom:18px;">조회 암호를 입력하세요</div>' +
-      '<input id="aceGateInput" type="password" inputmode="numeric" placeholder="암호" ' +
-        'style="width:100%;padding:11px 14px;border:1px solid #c9c6bd;border-radius:7px;font-size:15px;text-align:center;letter-spacing:.3em;outline:none;box-sizing:border-box;">' +
-      '<div id="aceGateErr" style="color:#c8161d;font-size:11.5px;height:16px;margin:8px 0;"></div>' +
-      '<button id="aceGateBtn" style="width:100%;padding:11px;background:#c8161d;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;">입장</button>' +
+  const expId = window.__ACE_VIEW_ID__ || '1991';
+  const wrap = document.createElement('div');
+  wrap.id = 'aceLogin';
+  wrap.innerHTML =
+    '<div class="ace-login-brand">' +
+      '<div class="ace-login-logo"></div>' +
+      '<div class="ace-login-hero">' +
+        '<h1>사업운영 통합 플랫폼</h1>' +
+        '<p class="tag">한곳에 모인 데이터로 글로벌 비즈니스를 이끄는 스마트한 의사결정 도구</p>' +
+      '</div>' +
+      '<div class="ace-login-foot">© ACE Engineering. All rights reserved.</div>' +
+    '</div>' +
+    '<div class="ace-login-form">' +
+      '<div class="ace-login-card">' +
+        '<div class="ace-login-title">로그인</div>' +
+        '<div class="ace-login-sub">계정 정보를 입력해 주세요</div>' +
+        '<label class="ace-login-label" for="aceLoginId">아이디</label>' +
+        '<input id="aceLoginId" class="ace-login-input" type="text" autocomplete="username" placeholder="아이디">' +
+        '<label class="ace-login-label" for="aceLoginPw">비밀번호</label>' +
+        '<input id="aceLoginPw" class="ace-login-input" type="password" autocomplete="current-password" placeholder="비밀번호">' +
+        '<div class="ace-login-row"><label class="ace-login-remember"><input type="checkbox" id="aceLoginRemember"> 아이디·비밀번호 저장</label></div>' +
+        '<div id="aceLoginErr" class="ace-login-err"></div>' +
+        '<button id="aceLoginBtn" class="ace-login-btn">로그인</button>' +
+        '<button type="button" id="aceLoginReset" class="ace-login-reset"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg> 비밀번호 초기화</button>' +
+      '</div>' +
     '</div>';
-  document.documentElement.appendChild(gate);
-  const input = gate.querySelector('#aceGateInput');
-  const err = gate.querySelector('#aceGateErr');
+  document.documentElement.appendChild(wrap);
+  try { const b = document.querySelector('.brand'); if (b) wrap.querySelector('.ace-login-logo').appendChild(b.cloneNode(true)); } catch(e){}
+  const id = wrap.querySelector('#aceLoginId');
+  const pwi = wrap.querySelector('#aceLoginPw');
+  const err = wrap.querySelector('#aceLoginErr');
+  const remember = wrap.querySelector('#aceLoginRemember');
+  // 저장된 아이디·비밀번호 자동 채우기
+  try {
+    const rm = JSON.parse(localStorage.getItem('ace_login_remember') || 'null');
+    if (rm) { id.value = rm.id || ''; pwi.value = rm.pw || ''; remember.checked = true; }
+  } catch (e) {}
+  // 유효 비밀번호 = 재설정 오버라이드 또는 기본값
+  const effPw = () => localStorage.getItem('ace_login_pw_override') || String(pw);
   const tryAuth = () => {
-    if (input.value === String(pw)) { sessionStorage.setItem('ace_view_authed', '1'); aceUnlockView(); }
-    else { err.textContent = '암호가 올바르지 않습니다'; input.value = ''; input.focus(); }
+    if (id.value.trim() === String(expId) && pwi.value === effPw()) {
+      if (remember.checked) localStorage.setItem('ace_login_remember', JSON.stringify({ id: id.value.trim(), pw: pwi.value }));
+      else localStorage.removeItem('ace_login_remember');
+      sessionStorage.setItem('ace_view_authed', '1'); aceUnlockView();
+    } else {
+      err.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.'; pwi.value = ''; pwi.focus();
+    }
   };
-  gate.querySelector('#aceGateBtn').addEventListener('click', tryAuth);
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryAuth(); });
-  setTimeout(() => input.focus(), 50);
+  wrap.querySelector('#aceLoginBtn').addEventListener('click', tryAuth);
+  [id, pwi].forEach(el => el.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryAuth(); }));
+  // 비밀번호 초기화 (마스터 키: P@ssword!)
+  wrap.querySelector('#aceLoginReset').addEventListener('click', () => {
+    const key = prompt('비밀번호 초기화 키를 입력하세요.');
+    if (key === null) return;
+    if (key === 'P@ssword!') {
+      localStorage.removeItem('ace_login_pw_override');
+      localStorage.removeItem('ace_login_remember');
+      id.value = ''; pwi.value = ''; remember.checked = false; err.textContent = '';
+      alert('비밀번호가 기본값으로 초기화되었습니다.\n기본 계정 정보로 다시 로그인해 주세요.');
+      id.focus();
+    } else {
+      alert('초기화 키가 올바르지 않습니다.');
+    }
+  });
+  setTimeout(() => id.focus(), 60);
 }
+
+// 로그아웃 — 세션 인증 해제 후 로그인 화면으로
+window.aceLogout = function() {
+  try { sessionStorage.removeItem('ace_view_authed'); } catch (e) {}
+  location.reload();
+};
 
 // 조회 전용 모드 진입 (스크립트는 body 끝이라 DOM 존재)
 if (window.__ACE_VIEW__) setupViewGate();
+
+// ============================================================
+// 메가메뉴 (대메뉴 호버 드롭다운)
+// ============================================================
+(function initMegaMenu(){
+  const mm = document.getElementById('megaMenu');
+  const inner = document.getElementById('megaMenuInner');
+  const nav = document.querySelector('.cat-nav');
+  if (!mm || !inner || !nav) return;
+  let hideT = null;
+  const labelOf = (t) => (t.textContent || '').replace(/\s*\d+\s*$/, '').trim() || t.dataset.tab;
+  function openMega(cat, btn){
+    const tabs = [...document.querySelectorAll('.tab[data-cat="' + cat + '"]')].filter(t => t.style.display !== 'none');
+    if (!tabs.length) { closeMega(); return; }
+    inner.innerHTML = tabs.map(t => '<div class="mega-link" data-go="' + t.dataset.tab + '">' + escapeHtml(labelOf(t)) + '</div>').join('');
+    mm.classList.add('open');
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('mega-hot', b === btn));
+  }
+  function closeMega(){ mm.classList.remove('open'); document.querySelectorAll('.cat-btn.mega-hot').forEach(b => b.classList.remove('mega-hot')); }
+  document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
+    btn.addEventListener('mouseenter', () => { clearTimeout(hideT); openMega(btn.dataset.cat, btn); });
+  });
+  nav.addEventListener('mouseleave', () => { hideT = setTimeout(closeMega, 160); });
+  nav.addEventListener('mouseenter', () => clearTimeout(hideT));
+  inner.addEventListener('click', (e) => {
+    const l = e.target.closest('.mega-link'); if (!l) return;
+    const t = document.querySelector('.tab[data-tab="' + l.dataset.go + '"]'); if (t) t.click();
+    closeMega();
+  });
+})();
+
+// ============================================================
+// PO 변동현황 (신규·추가·변경 발주서 입력/조회/수정)
+// ============================================================
+const POC_KEY = 'ace_po_changes_v1';
+function loadPoc(){ try { const s = localStorage.getItem(POC_KEY); if (s) return JSON.parse(s); } catch(e){} return null; }
+function savePocAll(){ try { localStorage.setItem(POC_KEY, JSON.stringify(pocData)); } catch(e){} }
+let pocData = loadPoc();
+if (!pocData) {
+  pocData = [
+    { customer:'On Energy', project:'Childress PJT',    type:'추가', prevQty:126, newQty:226, fca:'26년 9월 ~',   date:'2026-06-05', note:'100대 추가 수취' },
+    { customer:'On Energy', project:'Warrenton 1 PJT',  type:'추가', prevQty:114, newQty:202, fca:'26년 11월 ~',  date:'2026-06-05', note:'88대 추가 수취' },
+    { customer:'LG',        project:'Isabella PJT',     type:'신규', prevQty:0,   newQty:39,  fca:'26년 11월 25일', date:'2026-06-05', note:'39대 신규 수취' },
+    { customer:'LG',        project:'Meridian PJT',     type:'신규', prevQty:0,   newQty:52,  fca:'26년 10월 26일', date:'2026-06-05', note:'52대 신규 수취' },
+    { customer:'LG',        project:'Royal Slope PJT',  type:'추가', prevQty:22,  newQty:62,  fca:'26년 9월 26일',  date:'2026-06-05', note:'40대 추가 수취 · 프로젝트명 변경: Canadian Solar Lupins 1 PJT → LG Royal Slope PJT' },
+  ];
+  savePocAll();
+}
+let pocEditIndex = -1;
+function pocDelta(r){ return Math.max(0, (+r.newQty || 0) - (+r.prevQty || 0)); }
+function openPocTab(){ renderPocSummary(); renderPocTable(); }
+function renderPocSummary(){
+  const el = document.getElementById('pocSummary'); if (!el) return;
+  const added = pocData.reduce((s, r) => s + pocDelta(r), 0);
+  const newCnt = pocData.filter(r => r.type === '신규').length;
+  el.innerHTML =
+    '<div class="poc-sumcard"><div class="lbl">최근 접수·추가 수취 총 수량</div><div class="val" style="color:var(--ace-red);">' + added.toLocaleString() + ' 대</div></div>' +
+    '<div class="poc-sumcard"><div class="lbl">변동 건수</div><div class="val">' + pocData.length + ' 건</div></div>' +
+    '<div class="poc-sumcard"><div class="lbl">신규 PJT</div><div class="val">' + newCnt + ' 건</div></div>';
+}
+function renderPocTable(){
+  const wrap = document.getElementById('pocWrap'); if (!wrap) return;
+  const q = (document.getElementById('pocSearch')?.value || '').toLowerCase().trim();
+  if (!pocData.length) { wrap.innerHTML = '<div class="poc-empty">등록된 변동 내역이 없습니다. [신규 입력]으로 추가하세요.</div>'; return; }
+  const rows = pocData.map((r, i) => ({ r, i })).filter(({ r }) => !q || [r.customer, r.project, r.note, r.type].some(v => (v || '').toString().toLowerCase().includes(q)));
+  const badge = t => t === '신규' ? '<span class="poc-badge new">신규</span>' : (t === '추가' ? '<span class="poc-badge add">추가</span>' : '<span class="poc-badge chg">변경</span>');
+  wrap.innerHTML = '<table><thead><tr><th>고객사</th><th>프로젝트</th><th>구분</th><th>기존</th><th>신규</th><th>증감</th><th>FCA</th><th>접수일</th><th>비고</th><th></th></tr></thead><tbody>' +
+    rows.map(({ r, i }) => { const d = pocDelta(r); return '<tr onclick="openPocEditor(' + i + ')">' +
+      '<td><b>' + escapeHtml(r.customer || '') + '</b></td><td>' + escapeHtml(r.project || '') + '</td><td>' + badge(r.type) + '</td>' +
+      '<td>' + (r.prevQty || 0) + '</td><td>' + (r.newQty || 0) + '</td><td class="poc-delta-up">' + (d > 0 ? '+' + d : '-') + '</td>' +
+      '<td>' + escapeHtml(r.fca || '') + '</td><td>' + escapeHtml(r.date || '') + '</td>' +
+      '<td style="white-space:normal;max-width:300px;color:var(--text-dim);">' + escapeHtml(r.note || '') + '</td>' +
+      '<td onclick="event.stopPropagation()" data-edit-only><button class="pm-icon-btn" title="삭제" onclick="deletePocRecord(' + i + ')">×</button></td></tr>'; }).join('') +
+    '</tbody></table>';
+}
+window.renderPocTable = renderPocTable;
+window.openPocEditor = function(idx){
+  pocEditIndex = idx; const r = idx >= 0 ? pocData[idx] : { type:'신규' };
+  document.getElementById('pocDrawerTitle').textContent = idx >= 0 ? '발주 변동 수정' : '발주 변동 입력';
+  document.getElementById('pocDeleteBtn').style.display = idx >= 0 ? 'inline-flex' : 'none';
+  const set = (k, v) => { const e = document.getElementById('poc-f-' + k); if (e) e.value = v == null ? '' : v; };
+  set('customer', r.customer); set('type', r.type || '신규'); set('project', r.project);
+  set('prevQty', r.prevQty); set('newQty', r.newQty); set('fca', r.fca); set('date', r.date); set('note', r.note);
+  const dl = document.getElementById('poc-dl-customer');
+  if (dl) { const cs = [...new Set(pocData.map(x => x.customer).filter(Boolean))]; dl.innerHTML = cs.map(c => '<option value="' + escapeHtml(c) + '">').join(''); }
+  document.getElementById('pocDrawerMask').classList.add('open');
+  document.getElementById('pocDrawer').classList.add('open');
+};
+window.closePocDrawer = function(){ document.getElementById('pocDrawerMask').classList.remove('open'); document.getElementById('pocDrawer').classList.remove('open'); pocEditIndex = -1; };
+window.savePocRecord = function(){
+  const g = k => (document.getElementById('poc-f-' + k).value || '').trim();
+  const rec = { customer:g('customer'), type:g('type'), project:g('project'), prevQty:+g('prevQty') || 0, newQty:+g('newQty') || 0, fca:g('fca'), date:g('date'), note:g('note') };
+  if (!rec.customer && !rec.project) { alert('고객사 또는 프로젝트를 입력하세요.'); return; }
+  if (pocEditIndex >= 0) pocData[pocEditIndex] = rec; else pocData.push(rec);
+  savePocAll(); renderPocSummary(); renderPocTable(); closePocDrawer();
+};
+window.deletePocRecord = function(idx){
+  const i = (typeof idx === 'number') ? idx : pocEditIndex; if (i < 0 || i >= pocData.length) return;
+  if (!confirm('이 변동 내역을 삭제할까요?')) return;
+  pocData.splice(i, 1); savePocAll(); renderPocSummary(); renderPocTable(); if (pocEditIndex === i) closePocDrawer();
+};
+window.exportPoc = function(){
+  if (!pocData.length) { alert('내보낼 데이터가 없습니다.'); return; }
+  const hdr = ['고객사','프로젝트','구분','기존수량','신규수량','증감','FCA','접수일','비고'];
+  const aoa = [hdr].concat(pocData.map(r => [r.customer, r.project, r.type, r.prevQty, r.newQty, pocDelta(r), r.fca, r.date, r.note]));
+  const ws = XLSX.utils.aoa_to_sheet(aoa); const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '발주변동현황');
+  XLSX.writeFile(wb, '발주변동현황_' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '.xlsx');
+};
+
+// ============================================================
+// 발주 현황 대시보드 (news-front)
+// ============================================================
+function podGoto(cat, tab){
+  const c = document.querySelector('.cat-btn[data-cat="' + cat + '"]'); if (c) c.click();
+  const t = document.querySelector('.tab[data-tab="' + tab + '"]'); if (t) t.click();
+}
+window.podGoto = podGoto;
+window.podSetAsp = function(v){
+  localStorage.setItem('ace_pod_asp', v || '');
+  const added = pocData.reduce((s, r) => s + pocDelta(r), 0);
+  const asp = parseFloat(v) || 0;
+  const el = document.getElementById('podExpRev');
+  if (el) el.innerHTML = asp ? ('+' + Math.round(added * asp).toLocaleString() + ' 억') : '<span style="font-size:15px;color:#9aa6b6;">대당 단가 입력 시 자동 계산</span>';
+};
+function renderPodBrief(){
+  const brief = document.getElementById('podBrief'); if (!brief) return;
+  const added = pocData.reduce((s, r) => s + pocDelta(r), 0);
+  const newCnt = pocData.filter(r => r.type === '신규').length;
+  const asp = parseFloat(localStorage.getItem('ace_pod_asp') || '') || 0;
+  const items = pocData.slice().sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 6);
+  let briefDate = ''; try { briefDate = new Date().toISOString().slice(0, 10); } catch(e){}
+  const expRevHtml = asp ? ('+' + Math.round(added * asp).toLocaleString() + ' 억') : '<span style="font-size:15px;color:#9aa6b6;">대당 단가 입력 시 자동 계산</span>';
+  brief.innerHTML =
+    '<div class="pod-brief">' +
+      '<div class="pod-brief-eyebrow">오늘의 브리핑 · ' + briefDate + '</div>' +
+      '<h3>최근 접수·변동된 발주 ' + pocData.length + '건이 있습니다</h3>' +
+      '<div class="sub">신규·추가 수취 합계 <b style="color:#fff;">' + added.toLocaleString() + '대</b>' + (newCnt ? (' · 신규 PJT ' + newCnt + '건') : '') + '. 프로젝트별 수량 변동과 FCA(출하 요청) 일정을 아래에서 확인하세요.</div>' +
+      '<div class="pod-brief-kpis">' +
+        '<div class="pod-brief-kpi"><div class="k-lbl">접수·변동 건수</div><div class="k-val">' + pocData.length + ' <span style="font-size:15px;">건</span></div></div>' +
+        '<div class="pod-brief-kpi"><div class="k-lbl">추가 수취 수량</div><div class="k-val red">+' + added.toLocaleString() + ' <span style="font-size:15px;">대</span></div></div>' +
+        '<div class="pod-brief-kpi"><div class="k-lbl">예상 변동 매출액 <span style="opacity:.75;">(대당 <input type="number" class="pod-asp" value="' + (asp || '') + '" placeholder="단가" oninput="podSetAsp(this.value)">억)</span></div><div class="k-val" id="podExpRev">' + expRevHtml + '</div></div>' +
+      '</div>' +
+      '<div class="pod-brief-list">' +
+        items.map(r => { const d = pocDelta(r); return '<div class="pod-brief-item">' +
+          '<div><span class="proj">' + escapeHtml(r.project || '') + '</span> <span class="typ">' + escapeHtml(r.type || '') + '</span><div class="cust">' + escapeHtml(r.customer || '') + '</div></div>' +
+          '<div class="qty">' + (d > 0 ? '+' + d + '대' : (r.newQty || 0) + '대') + '</div>' +
+          '<div class="fca">FCA ' + escapeHtml(r.fca || '-') + '</div>' +
+          '<div style="text-align:right;"><button onclick="podGoto(\'dash\',\'po-changes\')" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:5px 12px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;">상세</button></div>' +
+        '</div>'; }).join('') +
+      '</div>' +
+    '</div>';
+}
+function openPoDash(){
+  renderPodBrief();
+  const grid = document.getElementById('podGrid'); if (!grid) return;
+  let monthly = []; try { monthly = (LOGISTICS_INITIAL_DATA.monthly || []); } catch(e){}
+  const fx = 1380;
+  const eok = (usd) => Math.round((usd || 0) * fx / 1e8);
+  const series = monthly.map(m => ({ name: (m.m_name || m.month || '').slice(0, 3), val: eok(m.ar || m.fln_ar || 0) }));
+  const maxV = Math.max(1, ...series.map(s => s.val));
+  const bars = series.map(s => '<div class="pod-bar" style="height:' + Math.max(4, s.val / maxV * 100) + '%"><b>' + s.val.toLocaleString() + '</b><em>' + escapeHtml(s.name) + '</em></div>').join('');
+  const apr = monthly.find(m => /Apr/i.test(m.m_name || '')) || {};
+  const ytd = monthly.filter(m => ['Jan','Feb','Mar','Apr'].some(x => new RegExp(x, 'i').test(m.m_name || '')));
+  const aprLog = eok(apr.ap || apr.fln_ap || 0);
+  const ytdLog = eok(ytd.reduce((s, m) => s + (m.ap || m.fln_ap || 0), 0));
+  // 생산
+  let prodKpi = '—', prodSub = '생산 주간 현황';
+  try { const pd = (typeof productionData !== 'undefined' && productionData) ? productionData : null;
+    if (pd) { const arr = Array.isArray(pd) ? pd : (pd.rows || pd.items || pd.weeks || []); if (arr && arr.length) { prodKpi = arr.length + ''; prodSub = '등록 항목 · 최신 주차 기준'; } } } catch(e){}
+  // 채권
+  let recvKpi = '—', recvSub = '미수채권 관리';
+  try { const inv = (typeof arInvoices !== 'undefined' && arInvoices) ? arInvoices : [];
+    if (inv && inv.length) { const out = inv.reduce((s, x) => s + ((+x.outstanding || +x.balance || ((+x.amount || 0) - (+x.received || 0))) || 0), 0);
+      recvKpi = out ? '$' + Math.round(out).toLocaleString() : inv.length + '건'; recvSub = '인보이스 ' + inv.length + '건 기준'; } } catch(e){}
+  const pocAdded = pocData.reduce((s, r) => s + pocDelta(r), 0);
+  const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>';
+  grid.innerHTML =
+    '<div class="pod-card feature">' +
+      '<div class="pod-eyebrow">매출실적</div><div class="pod-title">월별 수주·매출 변동현황 <span style="font-weight:600;color:var(--text-muted);font-size:13px;">(단위: 억원)</span></div>' +
+      '<div class="pod-bars">' + bars + '</div>' +
+      '<div class="pod-goto"><button onclick="podGoto(\'sales\',\'dashboard\')">매출 대시보드 바로가기 ' + arrow + '</button></div>' +
+    '</div>' +
+    '<div class="pod-card">' +
+      '<div class="pod-eyebrow">생산</div><div class="pod-title">생산 주간 현황</div>' +
+      '<div class="pod-kpi">' + prodKpi + '</div><div class="pod-sub">' + prodSub + '</div>' +
+      '<div class="pod-goto"><button onclick="podGoto(\'production\',\'production\')">생산 현황 바로가기 ' + arrow + '</button></div>' +
+    '</div>' +
+    '<div class="pod-card">' +
+      '<div class="pod-eyebrow">물류</div><div class="pod-title">이번달 마감 (Apr) · 부분 실적</div>' +
+      '<div class="pod-kpis"><div><div class="pod-kpi">' + aprLog.toLocaleString() + '<small>억</small></div><div class="pod-sub">Apr 물류비</div></div>' +
+        '<div><div class="pod-kpi">' + ytdLog.toLocaleString() + '<small>억</small></div><div class="pod-sub">YTD 누적 (Jan~Apr)</div></div></div>' +
+      '<div class="pod-goto"><button onclick="podGoto(\'logistics\',\'logistics\')">물류비 관리 바로가기 ' + arrow + '</button></div>' +
+    '</div>' +
+    '<div class="pod-card">' +
+      '<div class="pod-eyebrow">채권</div><div class="pod-title">미수채권 현황</div>' +
+      '<div class="pod-kpi">' + recvKpi + '</div><div class="pod-sub">' + recvSub + '</div>' +
+      '<div class="pod-goto"><button onclick="podGoto(\'receivables\',\'ar-receivables\')">미수채권 바로가기 ' + arrow + '</button></div>' +
+    '</div>' +
+    '<div class="pod-card">' +
+      '<div class="pod-eyebrow">발주</div><div class="pod-title">최근 발주 변동 · 추가 수취</div>' +
+      '<div class="pod-kpi" style="color:var(--ace-red);">+' + pocAdded.toLocaleString() + '<small> 대</small></div><div class="pod-sub">신규·추가 수취 누계 (' + pocData.length + '건)</div>' +
+      '<div class="pod-goto"><button onclick="podGoto(\'po\',\'po-changes\')">발주 변동현황 바로가기 ' + arrow + '</button></div>' +
+    '</div>';
+  const upd = document.getElementById('podUpdated');
+  if (upd) { try { upd.textContent = '기준일 ' + ((LOGISTICS_INITIAL_DATA.meta && LOGISTICS_INITIAL_DATA.meta.last_updated) || ''); } catch(e){} }
+}
+window.openPoDash = openPoDash;
+
+// ============================================================
+// EPC MPS 현황 (생산·출하 스케줄 — ACE MPS 시드)
+// ============================================================
+const MPS_KEY = 'ace_mps_status_v1';
+let mpsData = []; try { const s = localStorage.getItem(MPS_KEY); if (s) mpsData = JSON.parse(s) || []; } catch(e){}
+let mpsFilter = '__all';
+function mpsStatusClass(s){ s = (s || '').toLowerCase(); if (/complete/.test(s)) return 'done'; if (/progress/.test(s)) return 'prog'; if (/pending/.test(s)) return 'pend'; return 'plan'; }
+function mpsStatusLabel(s){ if (!s || s === '0') return '예정'; return s; }
+function openMpsStatus(){ try { const s = localStorage.getItem(MPS_KEY); if (s) mpsData = JSON.parse(s) || []; } catch(e){} renderMpsPills(); renderMpsStatus(); }
+window.openMpsStatus = openMpsStatus;
+function renderMpsPills(){
+  const el = document.getElementById('mpsPills'); if (!el) return;
+  const counts = {}; mpsData.forEach(r => { const k = mpsStatusLabel(r.status); counts[k] = (counts[k] || 0) + 1; });
+  el.innerHTML = '<span class="pm-pill' + (mpsFilter === '__all' ? ' active' : '') + '" onclick="setMpsFilter(\'__all\')">전체 ' + mpsData.length + '</span>' +
+    Object.keys(counts).map(k => '<span class="pm-pill' + (mpsFilter === k ? ' active' : '') + '" onclick="setMpsFilter(\'' + k.replace(/'/g, '') + '\')">' + escapeHtml(k) + ' ' + counts[k] + '</span>').join('');
+}
+window.setMpsFilter = function(f){ mpsFilter = f; renderMpsPills(); renderMpsStatus(); };
+function renderMpsStatus(){
+  const wrap = document.getElementById('mpsWrap'); if (!wrap) return;
+  if (!mpsData.length) { wrap.innerHTML = '<div class="poc-empty" style="padding:56px 20px;text-align:center;color:var(--text-muted);">MPS 데이터가 없습니다. 배포본(github_deploy)에는 ACE MPS 시드가 포함됩니다.</div>'; return; }
+  const q = (document.getElementById('mpsSearch')?.value || '').toLowerCase().trim();
+  const rows = mpsData.filter(r => (mpsFilter === '__all' || mpsStatusLabel(r.status) === mpsFilter) && (!q || [r.project, r.customer, r.acePo, r.so].some(v => (v || '').toString().toLowerCase().includes(q))));
+  wrap.innerHTML = '<table><thead><tr><th>프로젝트</th><th>고객사</th><th>SO#</th><th>상태</th><th>제품</th><th>지역</th><th>시스템</th><th>System Start</th><th>Enclosure 출하</th><th>현장 납품</th><th>ACE PO#</th></tr></thead><tbody>' +
+    rows.map(r => '<tr><td><b>' + escapeHtml(r.project || '') + '</b></td><td>' + escapeHtml(r.customer || '') + '</td><td>' + escapeHtml(r.so || '') + '</td>' +
+      '<td><span class="mps-st ' + mpsStatusClass(r.status) + '">' + escapeHtml(mpsStatusLabel(r.status)) + '</span></td>' +
+      '<td>' + escapeHtml(r.product || '') + '</td><td>' + escapeHtml(r.location || '') + '</td><td>' + escapeHtml('' + (r.totSys || '')) + '</td>' +
+      '<td>' + escapeHtml(r.sysStart || '') + '</td><td>' + escapeHtml(r.encShip || '') + '</td><td>' + escapeHtml(r.delivSite || '') + '</td><td>' + escapeHtml(r.acePo || '') + '</td></tr>').join('') +
+    '</tbody></table>';
+}
+window.renderMpsStatus = renderMpsStatus;
+window.exportMps = function(){
+  if (!mpsData.length) { alert('내보낼 MPS 데이터가 없습니다.'); return; }
+  const hdr = ['프로젝트','고객사','SO#','상태','제품','지역','시스템수','System Start','Enclosure 출하','현장납품','ACE PO#'];
+  const aoa = [hdr].concat(mpsData.map(r => [r.project, r.customer, r.so, mpsStatusLabel(r.status), r.product, r.location, r.totSys, r.sysStart, r.encShip, r.delivSite, r.acePo]));
+  const ws = XLSX.utils.aoa_to_sheet(aoa); const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'EPC MPS'); XLSX.writeFile(wb, 'EPC_MPS_' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '.xlsx');
+};
+
+// ============================================================
+// 조직 · 권한 관리 (부서 · 인원 · 프로그램별)
+// ============================================================
+const ORG_KEY = 'ace_org_v2';
+const ACE_ORG_SEED = {"depts":[{"id":"d1","name":"회장실","members":[{"id":"m1","name":"유인선","role":"회장","job":"관리부","email":"sunnyyou@aceengineering.com","perms":{}}]},{"id":"d2","name":"대표이사","members":[{"id":"m2","name":"유대연","role":"대표이사","job":"기획부","email":"danny@aceengineering.com","perms":{}}]},{"id":"d3","name":"회장 직속","members":[{"id":"m3","name":"최우석","role":"부사장","job":"","email":"edward@aceengineering.com","perms":{}}]},{"id":"d4","name":"대표이사 직속","members":[{"id":"m4","name":"이세원","role":"부사장","job":"","email":"sewon9@aceengineering.com","perms":{}}]},{"id":"d5","name":"전략 TFT","members":[{"id":"m5","name":"이호용","role":"상무","job":"","email":"val.lee@aceengineering.com","perms":{}}]},{"id":"d6","name":"사업기획실","members":[{"id":"m6","name":"김형준","role":"상무","job":"","email":"jadon@aceengineering.com","perms":{}}]},{"id":"d7","name":"사업기획팀","members":[{"id":"m7","name":"김형준","role":"상무","job":"","email":"jadon@aceengineering.com","perms":{}},{"id":"m8","name":"황도하","role":"부장","job":"","email":"","perms":{}},{"id":"m9","name":"정승욱","role":"대리","job":"영업부","email":"jamie@aceengineering.com","perms":{}}]},{"id":"d8","name":"브랜드마케팅팀","members":[{"id":"m10","name":"김지원","role":"과장","job":"","email":"emily@aceengineering.com","perms":{}},{"id":"m11","name":"김수연","role":"대리","job":"","email":"cherry@aceengineering.com","perms":{}},{"id":"m12","name":"권혜진","role":"대리","job":"","email":"jina@aceengineering.com","perms":{}}]},{"id":"d9","name":"경영지원실","members":[{"id":"m13","name":"손무관","role":"이사","job":"","email":"mike@aceengineering.com","perms":{}}]},{"id":"d10","name":"경영지원팀","members":[{"id":"m14","name":"이경재","role":"과장","job":"영업부","email":"kyung@aceengineering.com","perms":{}},{"id":"m15","name":"주석민","role":"대리","job":"","email":"felix@aceengineering.com","perms":{}},{"id":"m16","name":"전윤재","role":"대리","job":"","email":"robert@aceengineering.com","perms":{}},{"id":"m17","name":"이수민","role":"대리","job":"","email":"","perms":{}},{"id":"m18","name":"이지나","role":"대리","job":"","email":"","perms":{}},{"id":"m19","name":"임유준","role":"주임","job":"기획부","email":"ron@aceengineering.com","perms":{}},{"id":"m20","name":"안상준","role":"주임","job":"","email":"milo@aceengineering.com","perms":{}},{"id":"m21","name":"김유정","role":"주임","job":"","email":"eden@aceengineering.com","perms":{}},{"id":"m22","name":"안재우","role":"주임","job":"","email":"","perms":{}}]},{"id":"d11","name":"경영관리본부","members":[{"id":"m23","name":"박태규","role":"전무","job":"","email":"tkpark@aceengineering.com","perms":{}}]},{"id":"d12","name":"인사팀","members":[{"id":"m24","name":"손무관","role":"이사","job":"","email":"mike@aceengineering.com","perms":{}},{"id":"m25","name":"박현성","role":"차장","job":"","email":"kei@aceengineering.com","perms":{}},{"id":"m26","name":"감보윤","role":"대리","job":"","email":"leo@aceengineering.com","perms":{}},{"id":"m27","name":"심승주","role":"대리","job":"","email":"","perms":{}}]},{"id":"d13","name":"재무기획팀","members":[{"id":"m28","name":"우승연","role":"이사","job":"","email":"syeon@aceengineering.com","perms":{}},{"id":"m29","name":"정우석","role":"부장","job":"","email":"","perms":{}},{"id":"m30","name":"유승우","role":"차장","job":"","email":"colbert@aceengineering.com","perms":{}},{"id":"m31","name":"김태준","role":"대리","job":"","email":"bruno@aceengineering.com","perms":{}},{"id":"m32","name":"차원준","role":"대리","job":"","email":"mark@aceengineering.com","perms":{}},{"id":"m33","name":"신용철","role":"주임","job":"","email":"yong@aceengineering.com","perms":{}}]},{"id":"d14","name":"회계팀","members":[{"id":"m34","name":"박용대","role":"부장","job":"관리부","email":"ydpark@aceengineering.com","perms":{}},{"id":"m35","name":"남시우","role":"과장","job":"","email":"bill@aceengineering.com","perms":{}},{"id":"m36","name":"송은진","role":"대리","job":"","email":"stella@aceengineering.com","perms":{}},{"id":"m37","name":"최유진","role":"대리","job":"영업부","email":"yujin@aceengineering.com","perms":{}},{"id":"m38","name":"김상호","role":"주임","job":"","email":"peter@aceengineering.com","perms":{}},{"id":"m39","name":"이지환","role":"사원","job":"","email":"julian@aceengineering.com","perms":{}}]},{"id":"d15","name":"미주법인","members":[{"id":"m40","name":"Harry Yoon","role":"","job":"","email":"","perms":{}},{"id":"m41","name":"Niloo Vahabzadeh","role":"","job":"관리부","email":"niloo.vahabzadeh@aceengineering.com","perms":{}},{"id":"m42","name":"Diana Park","role":"","job":"","email":"","perms":{}}]},{"id":"d16","name":"글로벌사업1본부","members":[{"id":"m43","name":"유대연","role":"대표이사","job":"기획부","email":"danny@aceengineering.com","perms":{}}]},{"id":"d17","name":"해외사업팀","members":[{"id":"m44","name":"박창현","role":"부장","job":"","email":"cory@aceengineering.com","perms":{}},{"id":"m45","name":"Mike Coyne","role":"","job":"","email":"mike.coyne@aceengineering.com","perms":{}},{"id":"m46","name":"Ara Abreu","role":"","job":"","email":"","perms":{}},{"id":"m47","name":"Dan Lenz","role":"","job":"","email":"dan.lenz@aceengineering.com","perms":{}},{"id":"m48","name":"Nicholas Russo","role":"","job":"","email":"","perms":{}},{"id":"m49","name":"김요한","role":"과장","job":"","email":"","perms":{}},{"id":"m50","name":"김민구","role":"대리","job":"영업부","email":"martin@aceengineering.com","perms":{}},{"id":"m51","name":"조병주","role":"대리","job":"","email":"billy@aceengineering.com","perms":{}}]},{"id":"d18","name":"국내사업팀","members":[{"id":"m52","name":"장준민","role":"차장","job":"영업부","email":"anderson@aceengineering.com","perms":{}},{"id":"m53","name":"이지훈A","role":"과장","job":"영업부","email":"james@aceengineering.com","perms":{}},{"id":"m54","name":"최영묵","role":"과장","job":"영업부","email":"","perms":{}},{"id":"m55","name":"박민준","role":"대리","job":"","email":"paul@aceengineering.com","perms":{}},{"id":"m56","name":"김규호","role":"주임","job":"영업부","email":"jayce@aceengineering.com","perms":{}}]},{"id":"d19","name":"APAC사업팀","members":[{"id":"m57","name":"정민우","role":"차장","job":"영업부","email":"john@aceengineering.com","perms":{}},{"id":"m58","name":"이주형","role":"대리","job":"영업부","email":"jan@aceengineering.com","perms":{}}]},{"id":"d20","name":"글로벌사업2본부","members":[{"id":"m59","name":"김형일","role":"상무","job":"","email":"carl.kim@aceengineering.com","perms":{}},{"id":"m60","name":"Brian Henderson","role":"","job":"관리부","email":"","perms":{}}]},{"id":"d21","name":"사업운영팀","members":[{"id":"m61","name":"권준우","role":"과장","job":"영업부","email":"jason@aceengineering.com","perms":{"dash":{"v":true,"e":true},"po":{"v":true,"e":true},"sales":{"v":true,"e":true},"quote":{"v":true,"e":true},"production":{"v":true,"e":true},"mps":{"v":true,"e":true},"material":{"v":true,"e":true},"logistics":{"v":true,"e":true},"receivables":{"v":true,"e":true},"erp":{"v":true,"e":true},"settings":{"v":true,"e":true},"admin":{"v":true,"e":true}}},{"id":"m62","name":"부권규","role":"과장","job":"영업부","email":"kenneth@aceengineering.com","perms":{"dash":{"v":true,"e":true},"po":{"v":true,"e":true},"sales":{"v":true,"e":true},"quote":{"v":true,"e":true},"production":{"v":true,"e":true},"mps":{"v":true,"e":true},"material":{"v":true,"e":true},"logistics":{"v":true,"e":true},"receivables":{"v":true,"e":true},"erp":{"v":true,"e":true},"settings":{"v":true,"e":true},"admin":{"v":true,"e":true}}},{"id":"m63","name":"안준선","role":"과장","job":"","email":"","perms":{"dash":{"v":true,"e":true},"po":{"v":true,"e":true},"sales":{"v":true,"e":true},"quote":{"v":true,"e":true},"production":{"v":true,"e":true},"mps":{"v":true,"e":true},"material":{"v":true,"e":true},"logistics":{"v":true,"e":true},"receivables":{"v":true,"e":true},"erp":{"v":true,"e":true},"settings":{"v":true,"e":true},"admin":{"v":true,"e":true}}},{"id":"m64","name":"신희철","role":"대리","job":"","email":"joseph@aceengineering.com","perms":{}},{"id":"m65","name":"이동협","role":"대리","job":"","email":"ted@aceengineering.com","perms":{}},{"id":"m66","name":"김자민","role":"주임","job":"","email":"jade@aceengineering.com","perms":{}},{"id":"m67","name":"김기현","role":"주임","job":"영업부","email":"oliver@aceengineering.com","perms":{}}]},{"id":"d22","name":"베트남 생산팀","members":[{"id":"m68","name":"김용일","role":"차장","job":"품질관리부","email":"logan@aceengineering.com","perms":{}},{"id":"m69","name":"정재한","role":"차장","job":"기술부","email":"jack@aceengineering.com","perms":{}},{"id":"m70","name":"변성현","role":"과장","job":"품질관리부","email":"kyle@aceengineering.com","perms":{}},{"id":"m71","name":"박명규","role":"대리","job":"생산부","email":"ravi@aceengineering.com","perms":{}},{"id":"m72","name":"장윤규","role":"대리","job":"","email":"luca@aceengineering.com","perms":{}},{"id":"m73","name":"안현준","role":"주임","job":"기술부","email":"william@aceengineering.com","perms":{}}]},{"id":"d23","name":"미국 생산 TFT","members":[{"id":"m74","name":"성동욱","role":"차장","job":"생산부","email":"kevin@aceengineering.com","perms":{}},{"id":"m75","name":"허정훈","role":"부장","job":"","email":"ethan@aceengineering.com","perms":{}},{"id":"m76","name":"남종현","role":"과장","job":"영업부","email":"jay@aceengineering.com","perms":{}},{"id":"m77","name":"변규빈","role":"대리","job":"","email":"jake@aceengineering.com","perms":{}},{"id":"m78","name":"Matt Lim","role":"","job":"","email":"","perms":{}}]},{"id":"d24","name":"기술개발총괄","members":[{"id":"m79","name":"김상훈","role":"전무","job":"기술부","email":"sanghoon@aceengineering.com","perms":{}}]},{"id":"d25","name":"기술개발본부","members":[{"id":"m80","name":"주재흥","role":"이사","job":"기술부","email":"justin@aceengineering.com","perms":{}}]},{"id":"d26","name":"개발기획팀","members":[{"id":"m81","name":"주재흥","role":"이사","job":"기술부","email":"justin@aceengineering.com","perms":{}},{"id":"m82","name":"박종식","role":"부장","job":"","email":"jeremy@aceengineering.com","perms":{}},{"id":"m83","name":"이지훈B","role":"차장","job":"","email":"","perms":{}},{"id":"m84","name":"서인문","role":"차장","job":"","email":"","perms":{}}]},{"id":"d27","name":"구조기술팀","members":[{"id":"m85","name":"장희수","role":"차장","job":"","email":"colin@aceengineering.com","perms":{}},{"id":"m86","name":"김유신","role":"차장","job":"","email":"denver@aceengineering.com","perms":{}},{"id":"m87","name":"전종영","role":"차장","job":"","email":"tom@aceengineering.com","perms":{}},{"id":"m88","name":"이현재","role":"과장","job":"","email":"henry@aceengineering.com","perms":{}},{"id":"m89","name":"조상호","role":"과장","job":"기술부","email":"joel@aceengineering.com","perms":{}},{"id":"m90","name":"이의찬","role":"과장","job":"","email":"chan@aceengineering.com","perms":{}},{"id":"m91","name":"제효진","role":"과장","job":"기술부","email":"jaxon@aceengineering.com","perms":{}},{"id":"m92","name":"조우연","role":"대리","job":"","email":"wooyeon@aceengineering.com","perms":{}},{"id":"m93","name":"신현준","role":"대리","job":"","email":"evan@aceengineering.com","perms":{}},{"id":"m94","name":"이기녕","role":"대리","job":"기술연구소","email":"","perms":{}}]},{"id":"d28","name":"전기기술팀","members":[{"id":"m95","name":"조용래","role":"차장","job":"","email":"ayaan@aceengineering.com","perms":{}},{"id":"m96","name":"양수석","role":"차장","job":"","email":"covi@aceengineering.com","perms":{}},{"id":"m97","name":"임준영","role":"차장","job":"기술부","email":"noah@aceengineering.com","perms":{}},{"id":"m98","name":"윤태웅","role":"과장","job":"","email":"ian@aceengineering.com","perms":{}},{"id":"m99","name":"조홍연","role":"과장","job":"","email":"","perms":{}},{"id":"m100","name":"김정우","role":"과장","job":"","email":"","perms":{}},{"id":"m101","name":"이규만","role":"대리","job":"","email":"austin@aceengineering.com","perms":{}},{"id":"m102","name":"백명근","role":"주임","job":"","email":"tim@aceengineering.com","perms":{}},{"id":"m103","name":"주혜진","role":"주임","job":"","email":"jinny@aceengineering.com","perms":{}}]},{"id":"d29","name":"시스템기술팀","members":[{"id":"m104","name":"차병건","role":"부장","job":"","email":"river@aceengineering.com","perms":{}},{"id":"m105","name":"이준석","role":"과장","job":"","email":"","perms":{}}]},{"id":"d30","name":"해석팀","members":[{"id":"m106","name":"박종식","role":"부장","job":"","email":"jeremy@aceengineering.com","perms":{}},{"id":"m107","name":"마상진","role":"과장","job":"","email":"gian@aceengineering.com","perms":{}},{"id":"m108","name":"성동근","role":"과장","job":"","email":"dennis@aceengineering.com","perms":{}}]},{"id":"d31","name":"생산총괄","members":[{"id":"m109","name":"김재식","role":"사장","job":"","email":"jskim@aceengineering.com","perms":{}}]},{"id":"d32","name":"생산본부","members":[{"id":"m110","name":"정기홍","role":"전무","job":"","email":"david@aceengineering.com","perms":{}}]},{"id":"d33","name":"생산기획팀","members":[{"id":"m111","name":"정기홍","role":"전무","job":"","email":"david@aceengineering.com","perms":{}},{"id":"m112","name":"정현준","role":"이사","job":"","email":"rio@aceengineering.com","perms":{}},{"id":"m113","name":"조성민A","role":"차장","job":"생산부","email":"sungmin@aceengineering.com","perms":{}},{"id":"m114","name":"우진수","role":"차장","job":"","email":"kai@aceengineering.com","perms":{}},{"id":"m115","name":"예수효","role":"과장","job":"자재부","email":"suhyo@aceengineering.com","perms":{}},{"id":"m116","name":"남영식","role":"과장","job":"자재부","email":"nephilim@aceengineering.com","perms":{}},{"id":"m117","name":"강석운","role":"대리","job":"","email":"garcia@aceengineering.com","perms":{}},{"id":"m118","name":"유민욱","role":"대리","job":"","email":"tony@aceengineering.com","perms":{}},{"id":"m119","name":"신용진","role":"부장","job":"","email":"","perms":{}}]},{"id":"d34","name":"생산혁신 1팀","members":[{"id":"m120","name":"조광훈","role":"부장","job":"","email":"ocean@aceengineering.com","perms":{}},{"id":"m121","name":"김성배","role":"상무","job":"생산부","email":"ben@aceengineering.com","perms":{}},{"id":"m122","name":"한장훈","role":"부장","job":"","email":"caleb@aceengineering.com","perms":{}},{"id":"m123","name":"이경수","role":"과장","job":"생산부","email":"sean@aceengineering.com","perms":{}},{"id":"m124","name":"이호준","role":"반장","job":"","email":"miles@aceengineering.com","perms":{}},{"id":"m125","name":"최민규","role":"반장","job":"","email":"tyler@aceengineering.com","perms":{}}]},{"id":"d35","name":"생산혁신 2팀","members":[{"id":"m126","name":"김도형","role":"차장","job":"","email":"dan@aceengineering.com","perms":{}},{"id":"m127","name":"이종명","role":"부장","job":"생산부","email":"lucas@aceengineering.com","perms":{}},{"id":"m128","name":"이종운","role":"차장","job":"생산부","email":"rogan@aceengineering.com","perms":{}},{"id":"m129","name":"정원철","role":"과장","job":"","email":"daren@aceengineering.com","perms":{}},{"id":"m130","name":"김상하","role":"과장","job":"","email":"damian@aceengineering.com","perms":{}},{"id":"m131","name":"김성권","role":"과장","job":"","email":"","perms":{}},{"id":"m132","name":"박동식","role":"반장","job":"","email":"alex@aceengineering.com","perms":{}},{"id":"m133","name":"임선택","role":"주임","job":"","email":"allen@aceengineering.com","perms":{}},{"id":"m134","name":"김현범","role":"주임","job":"생산부","email":"ronnie@aceengineering.com","perms":{}}]},{"id":"d36","name":"품질관리팀","members":[{"id":"m135","name":"신성한","role":"차장","job":"","email":"han@aceengineering.com","perms":{}},{"id":"m136","name":"황현덕","role":"차장","job":"","email":"dylan@aceengineering.com","perms":{}},{"id":"m137","name":"문정환","role":"차장","job":"품질관리부","email":"steven@aceengineering.com","perms":{}},{"id":"m138","name":"석성민","role":"과장","job":"품질관리부","email":"walter@aceengineering.com","perms":{}},{"id":"m139","name":"박주민","role":"대리","job":"품질관리부","email":"joomin@aceengineering.com","perms":{}}]},{"id":"d37","name":"생산기술팀","members":[{"id":"m140","name":"윤호영","role":"차장","job":"기술부","email":"nicholas@aceengineering.com","perms":{}},{"id":"m141","name":"윤진호","role":"과장","job":"기술부","email":"jackson@aceengineering.com","perms":{}}]},{"id":"d38","name":"환경안전팀","members":[{"id":"m142","name":"정기홍","role":"전무","job":"","email":"david@aceengineering.com","perms":{}},{"id":"m143","name":"배동환","role":"대리","job":"","email":"tod@aceengineering.com","perms":{}},{"id":"m144","name":"안희준","role":"대리","job":"","email":"","perms":{}}]},{"id":"d39","name":"생산지원팀","members":[{"id":"m145","name":"정기홍","role":"전무","job":"","email":"david@aceengineering.com","perms":{}},{"id":"m146","name":"심재환","role":"대리","job":"","email":"dex@aceengineering.com","perms":{}},{"id":"m147","name":"김경민","role":"대리","job":"","email":"nova@aceengineering.com","perms":{}}]},{"id":"d40","name":"New Biz TFT","members":[{"id":"m148","name":"김재식","role":"사장","job":"","email":"jskim@aceengineering.com","perms":{}}]},{"id":"d41","name":"CS TFT","members":[{"id":"m149","name":"정기홍","role":"전무","job":"","email":"david@aceengineering.com","perms":{}}]},{"id":"d42","name":"임원","members":[{"id":"m150","name":"이충우","role":"이사","job":"","email":"cwlee@aceengineering.com","perms":{}}]},{"id":"d43","name":"기타","members":[{"id":"m151","name":"super_user","role":"사원","job":"기획부","email":"acecon@aceengineering.com","perms":{}},{"id":"m152","name":"sales","role":"","job":"","email":"sales@aceengineering.com","perms":{}},{"id":"m153","name":"bes","role":"","job":"","email":"bes@aceengineering.com","perms":{}},{"id":"m154","name":"ACE 공용메일","role":"","job":"","email":"ace-engineering@aceengineering.com","perms":{}},{"id":"m155","name":"Minh","role":"대리","job":"","email":"joyce@aceengineering.com","perms":{}},{"id":"m156","name":"sam","role":"주임","job":"","email":"sam@aceengineering.com","perms":{}},{"id":"m157","name":"Martin Le","role":"주임","job":"","email":"martin.le@aceengineering.com","perms":{}},{"id":"m158","name":"글로벌 전략 영업본부","role":"","job":"","email":"global_sales_ops_div@aceengineering.com","perms":{}},{"id":"m159","name":"영업(전략기획+글로벌팀)","role":"","job":"","email":"global_sales@aceengineering.com","perms":{}},{"id":"m160","name":"Quynh","role":"","job":"","email":"quinn@aceengineering.com","perms":{}},{"id":"m161","name":"Terri.Denning","role":"","job":"","email":"terri@aceengineering.com","perms":{}},{"id":"m162","name":"Wendy Le","role":"","job":"","email":"","perms":{}},{"id":"m163","name":"Evelyn","role":"","job":"","email":"","perms":{}},{"id":"m164","name":"Harper","role":"","job":"","email":"","perms":{}},{"id":"m165","name":"Ava","role":"","job":"","email":"","perms":{}},{"id":"m166","name":"Ryo","role":"","job":"","email":"","perms":{}},{"id":"m167","name":"Victor","role":"","job":"","email":"","perms":{}}]}]};
+const OP_PROGRAMS = [
+  { k:'dash', label:'현황 대시보드' }, { k:'po', label:'발주관리' }, { k:'sales', label:'매출실적' },
+  { k:'quote', label:'제품 견적' }, { k:'production', label:'생산 주간현황' }, { k:'mps', label:'EPC MPS' },
+  { k:'material', label:'자재관리' }, { k:'logistics', label:'물류비' }, { k:'receivables', label:'미수채권' },
+  { k:'erp', label:'ERP 인보이스' }, { k:'settings', label:'설정 · 기준정보' }, { k:'admin', label:'권한 관리' },
+];
+function loadOrg(){ try { const s = localStorage.getItem(ORG_KEY); if (s) return JSON.parse(s); } catch(e){} return null; }
+function saveOrg(){ try { localStorage.setItem(ORG_KEY, JSON.stringify(orgData)); } catch(e){} }
+let orgData = loadOrg();
+if (!orgData) { orgData = JSON.parse(JSON.stringify(ACE_ORG_SEED)); saveOrg(); }
+let opSelMember = null;
+function findMember(id){ for (const d of orgData.depts) { const m = d.members.find(x => x.id === id); if (m) return { dept:d, member:m }; } return null; }
+function openOrgPerms(){ renderOrgSide(); renderOrgMain(); }
+window.openOrgPerms = openOrgPerms;
+function renderOrgSide(){
+  const el = document.getElementById('opSide'); if (!el) return;
+  el.innerHTML = orgData.depts.map(d => '<div class="op-dept">' +
+    '<div class="op-dept-h">' + escapeHtml(d.name) + ' <span class="cnt">' + d.members.length + '명</span></div>' +
+    d.members.map(m => '<div class="op-member' + (opSelMember === m.id ? ' sel' : '') + '" onclick="opSelect(\'' + m.id + '\')"><span>' + escapeHtml(m.name) + '<span class="role">' + escapeHtml(m.role || '') + '</span></span></div>').join('') +
+    '<div class="op-addmem" data-edit-only onclick="opAddMember(\'' + d.id + '\')">+ 인원 추가</div>' +
+  '</div>').join('');
+}
+window.opSelect = function(id){ opSelMember = id; renderOrgSide(); renderOrgMain(); };
+function renderOrgMain(){
+  const el = document.getElementById('opMain'); if (!el) return;
+  if (!opSelMember) { el.innerHTML = '<div class="op-empty">왼쪽에서 인원을 선택하면 프로그램별 접근 권한(조회/편집)을 설정할 수 있습니다.</div>'; return; }
+  const f = findMember(opSelMember); if (!f) { el.innerHTML = '<div class="op-empty">선택된 인원이 없습니다.</div>'; return; }
+  const m = f.member; if (!m.perms) m.perms = {};
+  el.innerHTML = '<div class="op-mtitle">' + escapeHtml(m.name) + ' <span style="font-size:13px;color:var(--text-muted);font-weight:600;">' + escapeHtml(m.role || '') + '</span></div>' +
+    '<div class="op-msub">' + escapeHtml(f.dept.name) + (m.email ? (' · ' + escapeHtml(m.email)) : '') + '</div>' +
+    '<table class="op-grid"><thead><tr><th>프로그램</th><th class="c">조회</th><th class="c">편집</th></tr></thead><tbody>' +
+    OP_PROGRAMS.map(p => { const pm = m.perms[p.k] || {}; return '<tr><td>' + escapeHtml(p.label) + '</td>' +
+      '<td class="c"><input type="checkbox" ' + (pm.v ? 'checked' : '') + ' onchange="opTogglePerm(\'' + p.k + '\',\'v\',this.checked)"></td>' +
+      '<td class="c"><input type="checkbox" ' + (pm.e ? 'checked' : '') + ' onchange="opTogglePerm(\'' + p.k + '\',\'e\',this.checked)"></td></tr>'; }).join('') +
+    '</tbody></table>' +
+    '<div class="op-actions"><button class="btn btn-secondary" data-edit-only onclick="opAllPerms(true)" style="padding:8px 14px;font-size:12px;">전체 조회 허용</button>' +
+    '<button class="btn btn-secondary" data-edit-only onclick="opAllPerms(false)" style="padding:8px 14px;font-size:12px;">전체 해제</button>' +
+    '<div style="flex:1"></div><button class="btn btn-secondary" data-edit-only onclick="opDeleteMember()" style="padding:8px 14px;font-size:12px;border-color:var(--ace-red);color:var(--ace-red);">인원 삭제</button></div>';
+}
+window.opTogglePerm = function(k, t, val){
+  const f = findMember(opSelMember); if (!f) return;
+  if (!f.member.perms[k]) f.member.perms[k] = { v:false, e:false };
+  f.member.perms[k][t] = val;
+  if (t === 'e' && val) { f.member.perms[k].v = true; saveOrg(); renderOrgMain(); return; }
+  saveOrg();
+};
+window.opAllPerms = function(v){
+  const f = findMember(opSelMember); if (!f) return;
+  OP_PROGRAMS.forEach(p => { f.member.perms[p.k] = v ? { v:true, e:(f.member.perms[p.k] && f.member.perms[p.k].e) || false } : { v:false, e:false }; });
+  saveOrg(); renderOrgMain();
+};
+window.opAddDept = function(){ const n = prompt('부서명을 입력하세요.'); if (!n) return; orgData.depts.push({ id:'d' + Date.now(), name:n.trim(), members:[] }); saveOrg(); renderOrgSide(); };
+window.opAddMember = function(deptId){ const d = orgData.depts.find(x => x.id === deptId); if (!d) return; const n = prompt('이름을 입력하세요.'); if (!n) return; const role = prompt('직급/역할 (예: 과장)', '') || ''; d.members.push({ id:'m' + Date.now(), name:n.trim(), role:role.trim(), email:'', perms:{} }); saveOrg(); renderOrgSide(); };
+window.opDeleteMember = function(){ const f = findMember(opSelMember); if (!f) return; if (!confirm(f.member.name + ' 인원을 삭제할까요?')) return; f.dept.members = f.dept.members.filter(x => x.id !== opSelMember); opSelMember = null; saveOrg(); renderOrgSide(); renderOrgMain(); };
 
 // ============================================================
 // INIT
@@ -10759,9 +11527,9 @@ async function onAuthReady() {
   applyAdminTabVisibility();
   // IO 툴바 권한 반영 + 현재 카테고리 view 권한 없으면 매출실적으로
   if (typeof renderIOBar === 'function') {
-    const activeCat = document.querySelector('.cat-btn.active')?.dataset.cat || 'sales';
-    if (activeCat !== 'utility' && typeof hasModuleView === 'function' && !hasModuleView(activeCat)) {
-      setActiveCategory('sales');
+    const activeCat = document.querySelector('.cat-btn.active')?.dataset.cat || 'dash';
+    if (activeCat !== 'utility' && activeCat !== 'dash' && typeof hasModuleView === 'function' && !hasModuleView(activeCat)) {
+      setActiveCategory('dash');
     } else {
       renderIOBar(activeCat);
     }
@@ -11077,9 +11845,10 @@ window.toggleModulePerm = function(email, mod, type, enabled) {
     updateUserBadge();
     // 현재 보고 있는 카테고리에서 view 권한 회수 당했으면 매출실적으로 이동
     const activeCat = document.querySelector('.cat-btn.active')?.dataset.cat;
-    if (activeCat && activeCat !== 'utility' && !hasModuleView(activeCat)) {
-      setActiveCategory('sales');
+    if (activeCat && activeCat !== 'utility' && activeCat !== 'dash' && !hasModuleView(activeCat)) {
+      setActiveCategory('dash');
     }
+    if (typeof openPoDash === 'function') { try { openPoDash(); } catch(e){} }
   }
   renderAdminPanel();
 };
@@ -20980,5 +21749,23 @@ window.addEventListener('DOMContentLoaded', () => {
   <option value="Drop / 취소">
   <option value="-">
 </datalist>
+
+<!-- ===== APP FOOTER (로그아웃 포함) ===== -->
+<footer class="app-footer">
+  <div class="app-footer-inner">
+    <div class="app-footer-brand">
+      <div class="app-footer-logo">ACE <span>ENGINEERING</span></div>
+      <div class="app-footer-info">
+        <div><strong>ADDRESS</strong> #80, Sapyeong-daero, Seocho-gu, Seoul, Korea&nbsp;&nbsp;Zip 06575</div>
+        <div><strong>TEL</strong> 02-578-0491&nbsp;&nbsp;&nbsp;<strong>E-MAIL</strong> sales@aceengineering.com</div>
+        <div class="copy">Copyright © 2026 ACE ENGINEERING, All Rights Reserved</div>
+      </div>
+    </div>
+    <button class="app-logout-btn" onclick="aceLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      로그아웃
+    </button>
+  </div>
+</footer>
 </body>
 </html>
