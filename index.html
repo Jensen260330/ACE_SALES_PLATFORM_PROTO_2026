@@ -4819,7 +4819,8 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
   <div class="logistics-container">
     <!-- 서브 탭 바 -->
     <div class="logistics-sub-tab-bar" id="logisticsSubTabBar">
-      <button class="logistics-sub-tab active" data-subtab="overview"> 종합 대시보드</button>
+      <button class="logistics-sub-tab active" data-subtab="settle"> 정산 (AP→AR)</button>
+      <button class="logistics-sub-tab" data-subtab="overview"> 종합 대시보드</button>
       <button class="logistics-sub-tab" data-subtab="ap"> AP 매입 관리</button>
       <button class="logistics-sub-tab" data-subtab="ar"> AR 매출 관리</button>
       <button class="logistics-sub-tab" data-subtab="customers"> 고객별 수익률</button>
@@ -4841,7 +4842,8 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":13
     </div>
 
     <!-- 서브 탭 패널들 -->
-    <div class="logistics-sub-panel active" id="logistics-sub-overview"></div>
+    <div class="logistics-sub-panel active" id="logistics-sub-settle"></div>
+    <div class="logistics-sub-panel" id="logistics-sub-overview"></div>
     <div class="logistics-sub-panel" id="logistics-sub-ap"></div>
     <div class="logistics-sub-panel" id="logistics-sub-ar"></div>
     <div class="logistics-sub-panel" id="logistics-sub-customers"></div>
@@ -17717,6 +17719,487 @@ function updateLogisticsMetaBar() {
   }
 }
 
+/* ===== ACE 물류비 정산 (AP→AR) 통합 모듈 — 네임스페이스 격리 ===== */
+(function(){
+var LS_SEED = [{"customer":"EPC","month":"2026-03","segment":"OB","key":"QJCU9053977","invoice":"QJCU9053977","project":"GSP Battery","product":"","ap":399.49199999999996,"ar":0,"remark":"","booking":""},{"customer":"EPC","month":"2026-03","segment":"OB","key":"CAAU4665488","invoice":"CAAU4665488","project":"GSP Battery","product":"","ap":399.49199999999996,"ar":0,"remark":"","booking":""},{"customer":"EPC","month":"2026-03","segment":"OB","key":"AAMU339715","invoice":"AAMU339715","project":"GSP Battery","product":"","ap":399.49199999999996,"ar":0,"remark":"","booking":""},{"customer":"EPC","month":"2026-03","segment":"OB","key":"FANU1416903","invoice":"FANU1416903","project":"GSP Battery","product":"","ap":399.49199999999996,"ar":0,"remark":"","booking":""},{"customer":"EPC","month":"2026-03","segment":"OB","key":"MAEU3483954","invoice":"MAEU3483954","project":"On Energy","product":"M10","ap":572.1608,"ar":2472.6000000000004,"remark":"","booking":"266781046","_arSource":"status"},{"customer":"EPC","month":"2026-03","segment":"OB","key":"TTNU0701396","invoice":"TTNU0701396","project":"On Energy","product":"M10","ap":572.1608,"ar":2472.6000000000004,"remark":"","booking":"266781046","_arSource":"status"},{"customer":"EPC","month":"2026-03","segment":"OB","key":"MAEU3435257","invoice":"MAEU3435257","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"267784674","_arSource":"status"},{"customer":"EPC","month":"2026-03","segment":"OB","key":"MAEU3513982","invoice":"MAEU3513982","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"267784674","_arSource":"status"},{"customer":"EPC","month":"2026-03","segment":"OB","key":"CAXU5793066","invoice":"CAXU5793066","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"267784674","_arSource":"status"},{"customer":"EPC","month":"2026-03","segment":"OB","key":"TLLU1536740","invoice":"TLLU1536740","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"267784674","_arSource":"status"},{"customer":"EPC","month":"2026-03","segment":"OB","key":"CAXU5741020","invoice":"CAXU5741020","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"267784674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAIU5728156","invoice":"CAIU5728156","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAIU5728731","invoice":"CAIU5728731","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAXU5563818","invoice":"CAXU5563818","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAXU5797009","invoice":"CAXU5797009","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CRTU7602191","invoice":"CRTU7602191","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CXSU1003209","invoice":"CXSU1003209","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4007824","invoice":"FBIU4007824","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4013724","invoice":"FBIU4013724","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4014910","invoice":"FBIU4014910","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4033130","invoice":"FBIU4033130","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4804670","invoice":"FBIU4804670","project":"On Energy","product":"M10","ap":549.2,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4834782","invoice":"FBIU4834782","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4838540","invoice":"FBIU4838540","project":"On Energy","product":"M10","ap":549.2,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4839300","invoice":"FBIU4839300","project":"On Energy","product":"M10","ap":549.2,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4840738","invoice":"FBIU4840738","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4841056","invoice":"FBIU4841056","project":"On Energy","product":"M10","ap":549.2,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4842052","invoice":"FBIU4842052","project":"On Energy","product":"M10","ap":635.6,"ar":2472.6000000000004,"remark":"FSC:100$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"FBIU4846119","invoice":"FBIU4846119","project":"On Energy","product":"M10","ap":549.2,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"GCXU1007595","invoice":"GCXU1007595","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"JXLU6017103","invoice":"JXLU6017103","project":"On Energy","product":"M10","ap":563.942,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"ZIMUHAI80208570","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3401616","invoice":"MAEU3401616","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3403223","invoice":"MAEU3403223","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3415292","invoice":"MAEU3415292","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3425670","invoice":"MAEU3425670","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3438153","invoice":"MAEU3438153","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3455079","invoice":"MAEU3455079","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3464785","invoice":"MAEU3464785","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3468517","invoice":"MAEU3468517","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3474361","invoice":"MAEU3474361","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3488220","invoice":"MAEU3488220","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3494861","invoice":"MAEU3494861","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3504949","invoice":"MAEU3504949","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3510577","invoice":"MAEU3510577","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3513513","invoice":"MAEU3513513","project":"On Energy","product":"M10","ap":639.704,"ar":2472.6000000000004,"remark":"FSC:100$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3517463","invoice":"MAEU3517463","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3521205","invoice":"MAEU3521205","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSCU4444340","invoice":"MSCU4444340","project":"On Energy","product":"M10","ap":562.4947999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSCU4444490","invoice":"MSCU4444490","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSCU4462805","invoice":"MSCU4462805","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSCU4464500","invoice":"MSCU4464500","project":"On Energy","product":"M10","ap":519.2948,"ar":2472.6000000000004,"remark":"FSC:72.31$","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSCU4464557","invoice":"MSCU4464557","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSCU4466077","invoice":"MSCU4466077","project":"On Energy","product":"M10","ap":562.4947999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSDU9945327","invoice":"MSDU9945327","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MSDU9978320","invoice":"MSDU9978320","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"SEGU7629123","invoice":"SEGU7629123","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"SEGU7643184","invoice":"SEGU7643184","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"SEGU7674333","invoice":"SEGU7674333","project":"On Energy","product":"M10","ap":549.2,"ar":2472.6000000000004,"remark":"FSC:100$","booking":"6449794180","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"SEGU7686150","invoice":"SEGU7686150","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TCLU6029170","invoice":"TCLU6029170","project":"On Energy","product":"M10","ap":562.4947999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TEXU6009792","invoice":"TEXU6009792","project":"On Energy","product":"M10","ap":518.0419999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Submitting CDs without EIR to avoid offload ( 11.5$/truck)","booking":"6450144060","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRIU0739225","invoice":"TRIU0739225","project":"On Energy","product":"M10","ap":519.2948,"ar":2472.6000000000004,"remark":"FSC:72.31$","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRIU0784902","invoice":"TRIU0784902","project":"On Energy","product":"M10","ap":562.4947999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRIU0795213","invoice":"TRIU0795213","project":"On Energy","product":"M10","ap":563.942,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"ZIMUHAI80208570","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRLU6011695","invoice":"TRLU6011695","project":"On Energy","product":"M10","ap":605.6948,"ar":2472.6000000000004,"remark":"FSC:72.31$, 1 NIGHT TRUCK DETENTION FEE ( 80$/truck)","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRLU6016526","invoice":"TRLU6016526","project":"On Energy","product":"M10","ap":609.7987999999999,"ar":2472.6000000000004,"remark":"FSC:72.31$, TRUCK DETENTION FEE ( 80$/truck) + Submit CD out of working time (3.8$/cont)","booking":"267846674","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRLU6024028","invoice":"TRLU6024028","project":"On Energy","product":"M10","ap":519.2948,"ar":2472.6000000000004,"remark":"FSC:72.31$","booking":"EBKG16465668","_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"ZCSU6017850","invoice":"ZCSU6017850","project":"On Energy","product":"M10","ap":563.942,"ar":2472.6000000000004,"remark":"FSC: 59.65$, Worker OT Fee at port to avoid truck detention ( 40$/truck )","booking":"ZIMUHAI80208570","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRIU0751046","invoice":"TRIU0751046","project":"Prevalon batch2","product":"EPC","ap":1238.1504000000002,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6017274","invoice":"JXLU6017274","project":"Prevalon batch2","product":"EPC","ap":1216.5504,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6018882","invoice":"ZCSU6018882","project":"Prevalon batch2","product":"EPC","ap":1216.5504,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6020236","invoice":"ZCSU6020236","project":"Prevalon batch2","product":"EPC","ap":1216.5504,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"DRYU1401063","invoice":"DRYU1401063","project":"Prevalon batch2","product":"EPC","ap":1216.5504,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TTNU0706551","invoice":"TTNU0706551","project":"Prevalon batch2","product":"EPC","ap":1216.5504,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6024458","invoice":"ZCSU6024458","project":"Prevalon batch2","product":"EPC","ap":1216.5504,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6016391","invoice":"JXLU6016391","project":"Prevalon batch2","product":"EPC","ap":1246.0236000000002,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571, pick up empty container at Lach Huyen","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6009725","invoice":"JXLU6009725","project":"Prevalon batch2","product":"EPC","ap":1246.0236000000002,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571, pick up empty container at Lach Huyen","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRIU0799667","invoice":"TRIU0799667","project":"Prevalon batch2","product":"EPC","ap":1246.0236000000002,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571, pick up empty container at Lach Huyen","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRIU0783700","invoice":"TRIU0783700","project":"Prevalon batch2","product":"EPC","ap":1246.0236000000002,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571, pick up empty container at Lach Huyen","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6016365","invoice":"JXLU6016365","project":"Prevalon batch2","product":"EPC","ap":1281.804,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRIU0741048","invoice":"TRIU0741048","project":"Prevalon batch2","product":"EPC","ap":1281.804,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6009690","invoice":"ZCSU6009690","project":"Prevalon batch2","product":"EPC","ap":1281.804,"ar":2472.6000000000004,"remark":"Lach Huyen/ZIMUHAI80208571","booking":"","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6010428","invoice":"JXLU6010428","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6023810","invoice":"ZCSU6023810","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6020257","invoice":"ZCSU6020257","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRIU0833355","invoice":"TRIU0833355","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6020426","invoice":"JXLU6020426","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TCLU6050270","invoice":"TCLU6050270","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRIU0785848","invoice":"TRIU0785848","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6019810","invoice":"ZCSU6019810","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRLU5041463","invoice":"TRLU5041463","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TCLU6050199","invoice":"TCLU6050199","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6018305","invoice":"JXLU6018305","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6021741","invoice":"ZCSU6021741","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"ZCSU6024592","invoice":"ZCSU6024592","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"JXLU6020067","invoice":"JXLU6020067","project":"On Energy","product":"M10","ap":1080.074,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"ZIMUHAI80212112","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRLU6025261","invoice":"TRLU6025261","project":"On Energy","product":"M10","ap":1047.3139999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, 1 NIGHT TRUCK DETENTION FEE ( 60$/truck), LASHING OT 20$/H ( TOTAL: 2.5H, 18H-20H30)","booking":"269078097","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"CRXU7660431","invoice":"CRXU7660431","project":"On Energy","product":"M10","ap":1047.3139999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, 1 NIGHT TRUCK DETENTION FEE ( 60$/truck), LASHING OT 20$/H ( TOTAL: 2.5H, 18H-20H30)","booking":"269078097","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TCLU6787360","invoice":"TCLU6787360","project":"On Energy","product":"M10","ap":1029.3139999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, 1 NIGHT TRUCK DETENTION FEE ( 60$/truck)","booking":"269078097","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TCLU6009750","invoice":"TCLU6009750","project":"On Energy","product":"M10","ap":1029.3139999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, 1 NIGHT TRUCK DETENTION FEE ( 60$/truck)","booking":"269078097","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TRLU6021918","invoice":"TRLU6021918","project":"On Energy","product":"M10","ap":1029.3139999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, 1 NIGHT TRUCK DETENTION FEE ( 60$/truck)","booking":"269078097","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TCLU6006914","invoice":"TCLU6006914","project":"On Energy","product":"M10","ap":1047.3139999999999,"ar":2472.6000000000004,"remark":"FSC: 59.65$, 1 NIGHT TRUCK DETENTION FEE ( 60$/truck), LASHING OT 20$/H ( TOTAL: 2.5H, 18H-20H30)","booking":"269078097","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"CAXU5553445","invoice":"CAXU5553445","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"SUDU9720464","invoice":"SUDU9720464","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"CAXU5786811","invoice":"CAXU5786811","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"CAXU5791905","invoice":"CAXU5791905","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"SEGU7698741","invoice":"SEGU7698741","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"CAXU5792584","invoice":"CAXU5792584","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"CAXU5563504","invoice":"CAXU5563504","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"MAEU3413480","invoice":"MAEU3413480","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"MAEU3446267","invoice":"MAEU3446267","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TLLU1537080","invoice":"TLLU1537080","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TLLU1536566","invoice":"TLLU1536566","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"GCXU1009710","invoice":"GCXU1009710","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"SEGU7688229","invoice":"SEGU7688229","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"TLLU1555930","invoice":"TLLU1555930","project":"On Energy","product":"M10","ap":964.514,"ar":2472.6000000000004,"remark":"FSC: 59.65$","booking":"268999091","_arSource":"status"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"BHCU4750394","invoice":"BHCU4750394","project":"PJT LG","product":"M10","ap":345.6,"ar":0,"remark":"Booking cancel 4 trucks ( 80$/truck)  date 19/05, FSC: 59.65$","booking":"269640597"},{"customer":"EPC","month":"2026-05","segment":"OB","key":"BHCU4750394","invoice":"BHCU4750394","project":"PJT LG","product":"M10","ap":8296.56,"ar":0,"remark":"Cancel 20 trucks, FSC: 59.65$","booking":"269640597"},{"customer":"EPC","month":"2026-02","segment":"OB","key":"15C21949","invoice":"15C21949","project":"On Energy","product":"M10","ap":688.75,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-02","segment":"OB","key":"15C28373","invoice":"15C28373","project":"On Energy","product":"M10","ap":688.75,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-02","segment":"OB","key":"15C27549","invoice":"15C27549","project":"On Energy","product":"M10","ap":688.75,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"ZCSU6014378","invoice":"ZCSU6014378","project":"On Energy Batch 4","product":"M10","ap":675.4804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"JXLU6023868","invoice":"JXLU6023868","project":"On Energy Batch 4","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"TRIU0827373","invoice":"TRIU0827373","project":"On Energy Batch 4","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"ZCSU6007450","invoice":"ZCSU6007450","project":"On Energy Batch 4","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"ZCSU6021931","invoice":"ZCSU6021931","project":"On Energy Batch 4","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"JXLU6016468","invoice":"JXLU6016468","project":"On Energy Batch 4","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"AMFU4246552","invoice":"AMFU4246552","project":"On Energy Batch 4","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3519240","invoice":"MAEU3519240","project":"Prevalon batch1","product":"M10","ap":675.4804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAXU5538570","invoice":"CAXU5538570","project":"Prevalon batch1","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"GCXU1000179","invoice":"GCXU1000179","project":"Prevalon batch1","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3470242","invoice":"MAEU3470242","project":"Prevalon batch1","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"SEGU7697895","invoice":"SEGU7697895","project":"Prevalon batch1","product":"M10","ap":653.8804,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAXU5548080","invoice":"CAXU5548080","project":"Prevalon batch1","product":"M10","ap":1327.6708,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"GCXU1000760","invoice":"GCXU1000760","project":"Prevalon batch1","product":"M10","ap":1327.6708,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3430487","invoice":"MAEU3430487","project":"Prevalon batch1","product":"M10","ap":1327.6708,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"MAEU3485005","invoice":"MAEU3485005","project":"Prevalon batch1","product":"M10","ap":1327.6708,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"EPC","month":"2026-04","segment":"OB","key":"CAXU5565868","invoice":"CAXU5565868","project":"Prevalon batch1","product":"M10","ap":1252.0708,"ar":2472.6000000000004,"_arSource":"status"},{"customer":"FLN","month":"2026-01","segment":"OB","key":"월집계_OB_2026-01","invoice":"월집계 2026-01 OB","project":"(월집계 수출)","product":"월집계","ap":15611.66,"ar":34405.73,"_src":"master-monthly"},{"customer":"FLN","month":"2026-02","segment":"OB","key":"월집계_OB_2026-02","invoice":"월집계 2026-02 OB","project":"(월집계 수출)","product":"월집계","ap":207587.57,"ar":337241.32,"_src":"master-monthly"},{"customer":"FLN","month":"2026-03","segment":"OB","key":"월집계_OB_2026-03","invoice":"월집계 2026-03 OB","project":"(월집계 수출)","product":"월집계","ap":228212.8,"ar":366583.46,"_src":"master-monthly"},{"customer":"FLN","month":"2026-01","segment":"IB","key":"월집계_IB_2026-01","invoice":"월집계 2026-01 IB","project":"(월집계 수입)","product":"월집계","ap":295406.88,"ar":348289.91,"_src":"master-monthly"},{"customer":"FLN","month":"2026-02","segment":"IB","key":"월집계_IB_2026-02","invoice":"월집계 2026-02 IB","project":"(월집계 수입)","product":"월집계","ap":350709.34,"ar":387463.92,"_src":"master-monthly"},{"customer":"FLN","month":"2026-03","segment":"IB","key":"월집계_IB_2026-03","invoice":"월집계 2026-03 IB","project":"(월집계 수입)","product":"월집계","ap":415563.59,"ar":469774.63,"_src":"master-monthly"},{"customer":"FLN","month":"2026-04","segment":"IB","key":"월집계_IB_2026-04","invoice":"월집계 2026-04 IB","project":"(월집계 수입)","product":"월집계","ap":524071.95,"ar":595127.57,"_src":"master-monthly"},{"customer":"FLN","month":"2026-05","segment":"IB","key":"월집계_IB_2026-05","invoice":"월집계 2026-05 IB","project":"(월집계 수입)","product":"월집계","ap":313578.8,"ar":380317.19,"_src":"master-monthly"},{"customer":"FLN","month":"2026-04","segment":"OB","key":"월집계_OB_2026-04","invoice":"월집계 2026-04 OB","project":"(월집계 수출)","product":"월집계","ap":582630.21,"ar":782268,"_src":"master-monthly"},{"customer":"FLN","month":"2026-05","segment":"OB","key":"월집계_OB_2026-05","invoice":"월집계 2026-05 OB","project":"(월집계 수출)","product":"월집계","ap":370272.24,"ar":629640.75,"_src":"master-monthly"},{"customer":"FLN","month":"2026-01","segment":"WH","key":"월집계_WH_2026-01","invoice":"월집계 2026-01 WH","project":"(월집계 창고)","product":"월집계","ap":26304.99,"ar":48830.2,"_src":"master-monthly"},{"customer":"FLN","month":"2026-02","segment":"WH","key":"월집계_WH_2026-02","invoice":"월집계 2026-02 WH","project":"(월집계 창고)","product":"월집계","ap":39903.51,"ar":104681.42,"_src":"master-monthly"},{"customer":"FLN","month":"2026-03","segment":"WH","key":"월집계_WH_2026-03","invoice":"월집계 2026-03 WH","project":"(월집계 창고)","product":"월집계","ap":67087.23,"ar":173454.36,"_src":"master-monthly"},{"customer":"FLN","month":"2026-04","segment":"WH","key":"월집계_WH_2026-04","invoice":"월집계 2026-04 WH","project":"(월집계 창고)","product":"월집계","ap":75508.09,"ar":153969.3,"_src":"master-monthly"},{"customer":"FLN","month":"2026-05","segment":"WH","key":"월집계_WH_2026-05","invoice":"월집계 2026-05 WH","project":"(월집계 창고)","product":"월집계","ap":124659.57,"ar":235709.42,"_src":"master-monthly"},{"customer":"EPC","month":"2026-01","segment":"OB","key":"월집계_OB_2026-01","invoice":"월집계 2026-01 OB","project":"(월집계 수출)","product":"월집계","ap":1058.4,"ar":0,"_src":"master-monthly"}];
+var LS_MONTHLY = {"months":["2026-01","2026-02","2026-03","2026-04","2026-05"],"revenue":{"2026-01":431525.839,"2026-02":836804.4638000005,"2026-03":1014757.6520000005,"2026-04":1726700.274399999,"2026-05":1364352.1534000032},"fileMargin":{"ALL":{"2026-01":0.21584781677988482,"2026-02":0.28266794099766424,"2026-03":0.2983468182805095,"2026-04":0.2843934506066114,"2026-05":0.3755227461790012},"FLN":{"2026-01":0.21830050884220192,"2026-02":0.27874362452462725,"2026-03":0.29604392004467034,"2026-04":0.2280022449494933,"2026-05":0.35094180015780285},"EPC":{"2026-01":0,"2026-02":0.7214470597751355,"2026-03":0.7685998544042709,"2026-04":0.7264818358577094,"2026-05":0.6335143506160856}},"customers":{"FLN":{"2026-01":{"apIB":295406.8806,"apOB":15611.657199999994,"apWH":26304.990967741942,"arIB":348289.90900000004,"arOB":34405.72999999999,"arWH":48830.2},"2026-02":{"apIB":350709.3390000001,"apOB":207587.56999999975,"apWH":39903.51,"arIB":387463.92499999993,"arOB":337241.3188000006,"arWH":104681.41999999998},"2026-03":{"apIB":415563.58800000005,"apOB":228212.79719999988,"apWH":67087.23000000001,"arIB":469774.63199999987,"arOB":366583.4600000006,"arWH":173454.35999999996},"2026-04":{"apIB":524071.94840000005,"apOB":582630.2068000003,"apWH":75508.09,"arIB":595127.5736000002,"arOB":782268.0007999989,"arWH":153969.30000000002},"2026-05":{"apIB":313578.8,"apOB":370272.24,"apWH":124659.57,"arIB":380317.18539999996,"arOB":629640.7480000033,"arWH":235709.42}},"EPC":{"2026-01":{"apOB":1058.4,"arOB":0},"2026-02":{"apOB":2066.25,"arOB":7417.8},"2026-03":{"apOB":1144.32,"arOB":4945.200000000001},"2026-04":{"apOB":53427.78,"arOB":195335.40000000002},"2026-05":{"apOB":43496.27599999999,"arOB":118684.8}}}};
+var LS = window.__LS = {
+  SKEY:'ace_logi_settle_v2', NKEY:'ace_logi_notes_v2', RKEY:'ace_logi_rules_v2',
+  data:null, notes:null, rules:null, view:'dash', built:false, panel:null
+};
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function lsLoad(){
+  try{var s=localStorage.getItem(LS.SKEY); if(s){var p=JSON.parse(s); if(Array.isArray(p)&&p.length) return p;}}catch(e){}
+  return clone(LS_SEED);
+}
+function lsSave(){try{localStorage.setItem(LS.SKEY,JSON.stringify(LS.data));}catch(e){}}
+function nLoad(){try{return JSON.parse(localStorage.getItem(LS.NKEY))||{};}catch(e){return {};}}
+function nSave(){try{localStorage.setItem(LS.NKEY,JSON.stringify(LS.notes));}catch(e){}}
+function rLoad(){try{var r=JSON.parse(localStorage.getItem(LS.RKEY)); if(Array.isArray(r))return r;}catch(e){}
+  return [{customer:'EPC',segment:'OB',project:'*',mode:'fixed_unit',rate:824.20},{customer:'EPC',segment:'OB',project:'*',mode:'percent',rate:73}];}
+function rSave(){try{localStorage.setItem(LS.RKEY,JSON.stringify(LS.rules));}catch(e){}}
+
+function normProj(s){return (s||'').replace(/\s+/g,' ').trim();}
+function fmt(n){if(n==null||isNaN(n))return '';return Math.round(n).toLocaleString('en-US');}
+function fmt2(n){if(n==null||isNaN(n))return '';return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function pct(ar,ap){if(!(ar>0))return null;return ((ar-ap)/ar)*100;}
+function mgClass(p){if(p==null)return '';if(p>=40)return 'ls-hi';if(p>=15)return 'ls-mid';return 'ls-lo';}
+function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+function injectStyle(){
+  if(document.getElementById('ls-style'))return;
+  var st=document.createElement('style'); st.id='ls-style';
+  st.textContent=[
+    '.ls-wrap{font-size:13px;color:#1f2430;}',
+    '.ls-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}',
+    '.ls-bar label{font-size:11px;color:#6b7280;margin-right:2px;}',
+    '.ls-bar select,.ls-bar input{padding:5px 8px;border:1px solid #e2e5ea;border-radius:5px;font-size:12px;font-family:inherit;}',
+    '.ls-vbtns{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;}',
+    '.ls-vbtn{padding:6px 14px;border:1px solid #e2e5ea;background:#eceef1;border-radius:6px;font-weight:700;color:#6b7280;cursor:pointer;font-size:12px;}',
+    '.ls-vbtn.on{background:#c8102e;color:#fff;border-color:#c8102e;}',
+    '.ls-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}',
+    '.ls-kpi{background:#fff;border:1px solid #e2e5ea;border-radius:10px;padding:10px 14px;flex:1;min-width:130px;}',
+    '.ls-kpi .l{font-size:11px;color:#6b7280;} .ls-kpi .v{font-size:20px;font-weight:800;margin-top:3px;}',
+    '.ls-kpi .v.red{color:#c8102e;} .ls-kpi .v.green{color:#1a8754;}',
+    '.ls-tw{max-height:62vh;overflow:auto;border:1px solid #e2e5ea;border-radius:8px;}',
+    '.ls-tbl{border-collapse:collapse;width:100%;background:#fff;font-size:12px;}',
+    '.ls-tbl th,.ls-tbl td{border:1px solid #e2e5ea;padding:6px 8px;text-align:right;white-space:nowrap;}',
+    '.ls-tbl th{background:#1a1a1a;color:#fff;font-weight:700;font-size:11px;position:sticky;top:0;z-index:2;text-align:center;}',
+    '.ls-tbl td.l,.ls-tbl th.l{text-align:left;}',
+    '.ls-tbl tr:nth-child(even) td{background:#fafbfc;}',
+    '.ls-tbl tr.tot td{background:#1a1a1a !important;color:#fff;font-weight:800;}',
+    '.ls-seg{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;}',
+    '.ls-seg.IB{background:#e7f0ff;color:#1c64f2;} .ls-seg.OB{background:#ffeef0;color:#c8102e;} .ls-seg.WH{background:#eef7ee;color:#1a8754;}',
+    '.ls-hi{color:#1a8754;font-weight:700;} .ls-mid{color:#b7791f;font-weight:700;} .ls-lo{color:#c8102e;font-weight:700;}',
+    '.ls-tbl td.ed{background:#fffdf5;cursor:text;} .ls-tbl td.ed input{width:88px;text-align:right;border:1px solid #d8c98a;border-radius:4px;padding:2px 4px;font-size:12px;}',
+    '.ls-tbl td.man{box-shadow:inset 3px 0 0 #1c64f2;}',
+    '.ls-pill{font-size:10px;color:#1c64f2;}',
+    '.ls-note{font-size:11px;color:#6b7280;margin:4px 0 10px;}',
+    '.ls-hint{background:#fff4e0;border:1px solid #f0d9a8;border-radius:6px;padding:8px 12px;font-size:11px;color:#7a5a12;margin-bottom:12px;}',
+    '.ls-dz{border:2px dashed #c8102e;border-radius:10px;padding:30px;text-align:center;background:#fff8f8;cursor:pointer;margin-bottom:14px;}',
+    '.ls-dz.over{background:#ffe9e9;border-color:#a50d26;}',
+    '.ls-dz .ic{font-size:34px;} .ls-dz .t{font-weight:700;margin-top:6px;} .ls-dz .s{font-size:11px;color:#6b7280;margin-top:4px;}',
+    '.ls-bar button,.ls-btn{padding:6px 12px;border:1px solid #e2e5ea;background:#fff;border-radius:5px;cursor:pointer;font-weight:600;font-size:12px;}',
+    '.ls-btn.primary{background:#c8102e;color:#fff;border-color:#c8102e;}',
+    '.ls-ta{width:100%;min-height:44px;border:1px solid #e2e5ea;border-radius:5px;padding:6px;font-family:inherit;font-size:12px;}'
+  ].join('\n');
+  document.head.appendChild(st);
+}
+
+function filtered(){
+  var c=val('lsCustomer'),m=val('lsMonth'),s=val('lsSeg'),q=(val('lsSearch')||'').trim().toLowerCase();
+  return LS.data.filter(function(r){
+    if(c&&r.customer!==c)return false;
+    if(m&&r.month!==m)return false;
+    if(s&&r.segment!==s)return false;
+    if(q){var h=(r.project+' '+r.invoice+' '+(r.product||'')+' '+(r.bl||'')).toLowerCase(); if(h.indexOf(q)<0)return false;}
+    return true;
+  });
+}
+function val(id){var e=document.getElementById(id);return e?e.value:'';}
+
+function ls_render(panel){
+  injectStyle();
+  if(panel) LS.panel=panel; panel=LS.panel||document.getElementById('logistics-sub-settle');
+  if(!panel)return;
+  if(!LS.data) LS.data=lsLoad();
+  if(!LS.notes) LS.notes=nLoad();
+  if(!LS.rules) LS.rules=rLoad();
+  if(!LS.built || !panel.querySelector('.ls-wrap')){ buildSkeleton(panel); LS.built=true; }
+  renderView();
+}
+window.ls_render = ls_render;
+
+function buildSkeleton(panel){
+  var custs=uniq(LS_SEED.map(function(r){return r.customer;})).sort();
+  var months=uniq(LS_SEED.map(function(r){return r.month;})).sort();
+  panel.innerHTML=''+
+  '<div class="ls-wrap">'+
+  '<div class="ls-hint">📌 AP(지급)가 근간, AR(수신)은 인보이스/컨테이너 키로 매칭됩니다. <b>Database 탭에서 AR 셀을 클릭해 직접 수정</b>하면 마진·마진율이 즉시 재계산됩니다. EPC는 O/B만(I/B는 DDP). <b>창고 업로드</b> 탭에서 창고 엑셀을 끌어다 놓아 추가하세요.</div>'+
+  '<div class="ls-bar">'+
+    '<span><label>고객</label><select id="lsCustomer"><option value="">전체</option>'+custs.map(function(c){return '<option>'+c+'</option>';}).join('')+'</select></span>'+
+    '<span><label>월</label><select id="lsMonth"><option value="">전체</option>'+months.map(function(m){return '<option>'+m+'</option>';}).join('')+'</select></span>'+
+    '<span><label>구분</label><select id="lsSeg"><option value="">전체</option><option value="IB">I/B</option><option value="OB">O/B</option><option value="WH">창고</option></select></span>'+
+    '<span><label>검색</label><input type="text" id="lsSearch" placeholder="PJT/인보이스/제품"></span>'+
+    '<div style="flex:1"></div>'+
+    '<button class="ls-btn" id="lsAutoAR" title="수신단가 규칙으로 빈 AR 자동 채움">⚙ AR 자동산출</button>'+
+    '<button class="ls-btn" id="lsExport">⬇ CSV</button>'+
+    '<button class="ls-btn" id="lsSPLoad" title="SharePoint에서 정산 데이터 불러오기">☁↓ SP 불러오기</button>'+
+    '<button class="ls-btn" id="lsSPSave" title="SharePoint에 정산 데이터 저장">☁↑ SP 저장</button>'+
+    '<button class="ls-btn" id="lsReset" title="편집 초기화">↺ 초기화</button>'+
+  '</div>'+
+  '<div class="ls-vbtns">'+
+    vbtn('dash','📊 고객 대시보드')+vbtn('summary','정산 요약')+vbtn('db','Database')+vbtn('trend','세그먼트 추이')+vbtn('rules','수신단가 규칙')+vbtn('upload','데이터 업로드')+
+  '</div>'+
+  '<div id="lsBody"></div>'+
+  '</div>';
+  // bind
+  ['lsCustomer','lsMonth','lsSeg'].forEach(function(id){document.getElementById(id).addEventListener('change',renderView);});
+  document.getElementById('lsSearch').addEventListener('input',renderView);
+  document.getElementById('lsExport').addEventListener('click',exportCSV);
+  document.getElementById('lsAutoAR').addEventListener('click',applyAutoAR);
+  document.getElementById('lsSPLoad').addEventListener('click',lsLoadSP);
+  document.getElementById('lsSPSave').addEventListener('click',lsPushSP);
+  document.getElementById('lsReset').addEventListener('click',function(){
+    if(confirm('편집내용(수정 AR/자동산출/창고추가)을 모두 지우고 원본으로 되돌립니다.')){localStorage.removeItem(LS.SKEY);LS.data=clone(LS_SEED);renderView();}});
+  panel.querySelectorAll('.ls-vbtn').forEach(function(b){b.addEventListener('click',function(){LS.view=b.dataset.v;renderView();});});
+}
+function vbtn(v,label){return '<button class="ls-vbtn" data-v="'+v+'">'+label+'</button>';}
+function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i;});}
+
+function renderView(){
+  var body=document.getElementById('lsBody'); if(!body)return;
+  LS.panel.querySelectorAll('.ls-vbtn').forEach(function(b){b.classList.toggle('on',b.dataset.v===LS.view);});
+  if(LS.view==='dash') body.innerHTML=viewDash();
+  else if(LS.view==='summary') body.innerHTML=viewSummary();
+  else if(LS.view==='db'){ body.innerHTML=viewDB(); bindDBEdits(); }
+  else if(LS.view==='trend'){ body.innerHTML=viewTrend(); bindNotes(); }
+  else if(LS.view==='rules'){ body.innerHTML=viewRules(); bindRules(); }
+  else if(LS.view==='upload'){ body.innerHTML=viewUpload(); bindUpload(); }
+}
+
+/* ===== 고객 대시보드 (월별 마스터 집계 기반 분석) ===== */
+function custMonth(c,m){var cm=LS_MONTHLY&&LS_MONTHLY.customers[c]&&LS_MONTHLY.customers[c][m];
+  if(!cm)return {apIB:0,apOB:0,apWH:0,arIB:0,arOB:0,arWH:0,ap:0,ar:0};
+  var o={apIB:cm.apIB||0,apOB:cm.apOB||0,apWH:cm.apWH||0,arIB:cm.arIB||0,arOB:cm.arOB||0,arWH:cm.arWH||0};
+  o.ap=o.apIB+o.apOB+o.apWH;o.ar=o.arIB+o.arOB+o.arWH;return o;}
+function allMonth(m){var f=custMonth('FLN',m),e=custMonth('EPC',m);var o={};['apIB','apOB','apWH','arIB','arOB','arWH','ap','ar'].forEach(function(k){o[k]=f[k]+e[k];});return o;}
+function ytd(c){var o={apIB:0,apOB:0,apWH:0,arIB:0,arOB:0,arWH:0,ap:0,ar:0};LS_MONTHLY.months.forEach(function(m){var d=(c==='ALL')?allMonth(m):custMonth(c,m);['apIB','apOB','apWH','arIB','arOB','arWH','ap','ar'].forEach(function(k){o[k]+=d[k];});});return o;}
+function heatBg(p){if(p==null||isNaN(p))return 'background:#f0f0f0;color:#bbb;';var x=Math.max(0,Math.min(60,p))/60;var hue=Math.round(x*125);return 'background:hsl('+hue+',72%,90%);color:hsl('+hue+',70%,28%);font-weight:800;';}
+function pp(cur,prev){if(cur==null||prev==null)return null;return cur-prev;}
+function viewDash(){
+  var M=LS_MONTHLY; if(!M||!M.months||!M.months.length) return '<div class="ls-note">월별 마스터 데이터가 없습니다.</div>';
+  var months=M.months;
+  var last=months[months.length-1];
+  var yAll=ytd('ALL'),yF=ytd('FLN'),yE=ytd('EPC');
+  var lastAll=allMonth(last);
+  // KPI
+  var h='<div class="ls-kpis">'+
+    kpi('YTD 매출(AR)',fmt(yAll.ar)+' $','red')+
+    kpi('YTD 마진',fmt(yAll.ar-yAll.ap)+' $','green')+
+    kpi('YTD 마진율',(yAll.ar>0?(((yAll.ar-yAll.ap)/yAll.ar)*100).toFixed(1):'-')+' %','green')+
+    kpi(last.slice(5)+'월 마진율',(lastAll.ar>0?(((lastAll.ar-lastAll.ap)/lastAll.ar)*100).toFixed(1):'-')+' %')+
+    kpi('FLN / EPC YTD 마진율',(yF.ar>0?(((yF.ar-yF.ap)/yF.ar)*100).toFixed(0):'-')+'% / '+(yE.ar>0?(((yE.ar-yE.ap)/yE.ar)*100).toFixed(0):'-')+'%')+
+    '</div>';
+  // 표1: 고객별 마진율 히트맵
+  h+='<h3 style="margin:6px 0 6px;font-size:15px">① 고객별 월별 마진율</h3>'+
+    '<div class="ls-note">마진율 = (AR−AP)/AR. 색이 진한 초록일수록 고마진. AP가 오르거나 판매가 변동 시 마진율이 출렁입니다.</div>'+
+    '<div class="ls-tw" style="margin-bottom:18px"><table class="ls-tbl"><thead><tr><th class="l">고객</th>'+
+    months.map(function(m){return '<th>'+m.slice(5)+'월</th>';}).join('')+'<th>YTD</th></tr></thead><tbody>';
+  [['전체','ALL'],['FLN','FLN'],['EPC','EPC']].forEach(function(cc){
+    var label=cc[0],c=cc[1];
+    h+='<tr><td class="l"><b>'+label+'</b></td>';
+    months.forEach(function(m){var d=(c==='ALL')?allMonth(m):custMonth(c,m);var p=pct(d.ar,d.ap);
+      h+='<td style="'+heatBg(p)+'">'+(p==null?'—':p.toFixed(1)+'%')+'</td>';});
+    var y=(c==='ALL')?yAll:(c==='FLN'?yF:yE);var yp=pct(y.ar,y.ap);
+    h+='<td style="'+heatBg(yp)+'">'+(yp==null?'—':yp.toFixed(1)+'%')+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  // 표2: 고객별 월별 분석 (최적화 컬럼)
+  h+='<h3 style="margin:6px 0 6px;font-size:15px">② 월별 분석 (고객별)</h3>'+
+    '<div class="ls-note">매출/매입/마진 규모와 <b>전월대비 마진율 변동(Δpp)</b>, <b>세그먼트별 마진율</b>(어디서 마진이 나는지), <b>OB 매출비중</b>, 전사 매출비중을 함께 봅니다.</div>'+
+    '<div class="ls-tw"><table class="ls-tbl"><thead><tr>'+
+    '<th class="l">고객</th><th>월</th><th>매출 AR</th><th>매입 AP</th><th>마진</th><th>마진율</th><th>Δ전월(pp)</th>'+
+    '<th>OB 마진율</th><th>IB 마진율</th><th>창고 마진율</th><th>OB 매출비중</th><th>전사 매출비중</th></tr></thead><tbody>';
+  [['FLN','FLN'],['EPC','EPC']].forEach(function(cc){
+    var c=cc[1];var prevP=null;
+    months.forEach(function(m,mi){
+      var d=custMonth(c,m);var all=allMonth(m);
+      if(d.ap===0&&d.ar===0){return;}
+      var p=pct(d.ar,d.ap);
+      var obP=pct(d.arOB,d.apOB),ibP=pct(d.arIB,d.apIB),whP=pct(d.arWH,d.apWH);
+      var delta=pp(p,prevP);prevP=p;
+      var obShare=d.ar>0?(d.arOB/d.ar*100):null;
+      var coShare=all.ar>0?(d.ar/all.ar*100):null;
+      var dStr=(delta==null)?'—':((delta>=0?'▲':'▼')+Math.abs(delta).toFixed(1));
+      var dCls=(delta==null)?'':(delta>=0?'ls-hi':'ls-lo');
+      h+='<tr><td class="l">'+(mi===0||true?'<b>'+c+'</b>':'')+'</td><td>'+m.slice(5)+'월</td>'+
+        '<td>'+fmt(d.ar)+'</td><td>'+fmt(d.ap)+'</td><td>'+fmt(d.ar-d.ap)+'</td>'+
+        '<td style="'+heatBg(p)+'">'+(p==null?'—':p.toFixed(1)+'%')+'</td>'+
+        '<td class="'+dCls+'">'+dStr+'</td>'+
+        '<td class="'+mgClass(obP)+'">'+(obP==null?'—':obP.toFixed(1)+'%')+'</td>'+
+        '<td class="'+mgClass(ibP)+'">'+(ibP==null?'—':ibP.toFixed(1)+'%')+'</td>'+
+        '<td class="'+mgClass(whP)+'">'+(whP==null?'—':whP.toFixed(1)+'%')+'</td>'+
+        '<td>'+(obShare==null?'—':obShare.toFixed(0)+'%')+'</td>'+
+        '<td>'+(coShare==null?'—':coShare.toFixed(0)+'%')+'</td></tr>';
+    });
+  });
+  h+='</tbody></table></div>'+
+    '<div class="ls-note" style="margin-top:8px">※ 본 대시보드는 <b>월별 Summary 마스터</b> 집계 기준입니다(전 구간 AR 포함). 인보이스/컨테이너 단위 상세는 <b>Database</b> 탭에서 확인하세요.</div>';
+  return h;
+}
+function viewSummary(){
+  var rows=filtered(); var tap=0,tar=0; rows.forEach(function(r){tap+=r.ap||0;tar+=r.ar||0;});
+  var tm=tar-tap;
+  var kp='<div class="ls-kpis">'+
+    kpi('총 AP (지급)',fmt(tap)+' $')+kpi('총 AR (수신)',fmt(tar)+' $','red')+
+    kpi('총 마진',fmt(tm)+' $','green')+kpi('평균 마진율',(tar>0?((tm/tar)*100).toFixed(1):'-')+' %','green')+
+    kpi('행 수',rows.length+' 건')+'</div>';
+  var g={};
+  rows.forEach(function(r){var pj=normProj(r.project)||'(미지정)';var pd=(r.product||'').trim()||'-';var k=r.customer+''+pj+''+pd;
+    g[k]=g[k]||{customer:r.customer,project:pj,product:pd,apIB:0,apOB:0,arIB:0,arOB:0,apWH:0,arWH:0};var o=g[k];
+    if(r.segment==='IB'){o.apIB+=r.ap||0;o.arIB+=r.ar||0;}
+    else if(r.segment==='OB'){o.apOB+=r.ap||0;o.arOB+=r.ar||0;}
+    else if(r.segment==='WH'){o.apWH+=r.ap||0;o.arWH+=r.ar||0;}});
+  var arr=Object.keys(g).map(function(k){return g[k];}).sort(function(a,b){return a.customer.localeCompare(b.customer)||a.project.localeCompare(b.project)||a.product.localeCompare(b.product);});
+  var h='<div class="ls-note">고객 · 프로젝트 · 제품 기준 집계. 창고(WH)는 O/B 옆 별도 열. 마진율 = (AR−AP)/AR.</div>'+
+    '<div class="ls-tw"><table class="ls-tbl"><thead><tr><th class="l">고객</th><th class="l">PJT</th><th class="l">제품</th>'+
+    '<th>AP I/B</th><th>AP O/B</th><th>AP 창고</th><th>AR I/B</th><th>AR O/B</th><th>AR 창고</th><th>AP 합</th><th>AR 합</th><th>마진</th><th>마진율</th></tr></thead><tbody>';
+  var t={apIB:0,apOB:0,apWH:0,arIB:0,arOB:0,arWH:0};
+  arr.forEach(function(o){var ap=o.apIB+o.apOB+o.apWH,ar=o.arIB+o.arOB+o.arWH,mg=ar-ap,p=pct(ar,ap);
+    t.apIB+=o.apIB;t.apOB+=o.apOB;t.apWH+=o.apWH;t.arIB+=o.arIB;t.arOB+=o.arOB;t.arWH+=o.arWH;
+    h+='<tr><td class="l">'+o.customer+'</td><td class="l">'+esc(o.project)+'</td><td class="l">'+esc(o.product)+'</td>'+
+      '<td>'+(o.apIB?fmt(o.apIB):'—')+'</td><td>'+(o.apOB?fmt(o.apOB):'—')+'</td><td>'+(o.apWH?fmt(o.apWH):'—')+'</td>'+
+      '<td>'+(o.arIB?fmt(o.arIB):'—')+'</td><td>'+(o.arOB?fmt(o.arOB):'—')+'</td><td>'+(o.arWH?fmt(o.arWH):'—')+'</td>'+
+      '<td>'+fmt(ap)+'</td><td>'+fmt(ar)+'</td><td>'+fmt(mg)+'</td><td class="'+mgClass(p)+'">'+(p==null?'—':p.toFixed(1)+'%')+'</td></tr>';});
+  var tap2=t.apIB+t.apOB+t.apWH,tar2=t.arIB+t.arOB+t.arWH,tp=pct(tar2,tap2);
+  h+='<tr class="tot"><td class="l" colspan="3">합계</td><td>'+fmt(t.apIB)+'</td><td>'+fmt(t.apOB)+'</td><td>'+fmt(t.apWH)+'</td>'+
+    '<td>'+fmt(t.arIB)+'</td><td>'+fmt(t.arOB)+'</td><td>'+fmt(t.arWH)+'</td><td>'+fmt(tap2)+'</td><td>'+fmt(tar2)+'</td><td>'+fmt(tar2-tap2)+'</td><td>'+(tp==null?'—':tp.toFixed(1)+'%')+'</td></tr>';
+  h+='</tbody></table></div>';
+  return kp+h;
+}
+function kpi(l,v,c){return '<div class="ls-kpi"><div class="l">'+l+'</div><div class="v '+(c||'')+'">'+v+'</div></div>';}
+
+function viewDB(){
+  var rows=filtered().slice().sort(function(a,b){return a.customer.localeCompare(b.customer)||normProj(a.project).localeCompare(normProj(b.project))||String(a.invoice).localeCompare(String(b.invoice));});
+  var h='<div class="ls-note">키값 = 인보이스(I/B) / 컨테이너(O/B). 프로젝트→인보이스 순 정렬. ('+rows.length+'건) · <b>AR 셀 클릭 → 수정</b></div>'+
+    '<div class="ls-tw"><table class="ls-tbl"><thead><tr><th class="l">고객</th><th>월</th><th>구분</th><th class="l">프로젝트</th><th class="l">제품</th>'+
+    '<th class="l">인보이스/컨테이너</th><th class="l">B/L</th><th>AP</th><th>AR (수정가능)</th><th>마진</th><th>마진율</th></tr></thead><tbody>';
+  rows.forEach(function(r){var idx=LS.data.indexOf(r);var ar=r.ar||0,ap=r.ap||0,mg=ar-ap,p=pct(ar,ap);
+    h+='<tr><td class="l">'+r.customer+'</td><td>'+r.month.slice(5)+'월</td>'+
+      '<td><span class="ls-seg '+r.segment+'">'+(r.segment==='OB'?'O/B':r.segment==='IB'?'I/B':'창고')+'</span></td>'+
+      '<td class="l">'+esc(normProj(r.project))+'</td><td class="l">'+esc(r.product||'')+'</td>'+
+      '<td class="l">'+esc(r.invoice||'')+'</td><td class="l">'+esc(r.bl||'')+'</td><td>'+fmt2(ap)+'</td>'+
+      '<td class="ed '+(r._manual?'man':'')+'" data-idx="'+idx+'">'+(ar?fmt2(ar):'<span style="color:#bbb">입력</span>')+(r._auto?' <span class="ls-pill">auto</span>':'')+(r._arSource==='status'?' <span class="ls-pill">실단가</span>':'')+'</td>'+
+      '<td>'+fmt2(mg)+'</td><td class="'+mgClass(p)+'">'+(p==null?'—':p.toFixed(1)+'%')+'</td></tr>';});
+  h+='</tbody></table></div>'; return h;
+}
+function bindDBEdits(){
+  document.querySelectorAll('#lsBody td.ed').forEach(function(td){td.addEventListener('click',function(){startEdit(td);});});
+}
+function startEdit(td){
+  if(td.querySelector('input'))return;
+  var idx=+td.dataset.idx,cur=LS.data[idx].ar||'';
+  td.innerHTML='<input type="number" step="0.01" value="'+cur+'">';
+  var inp=td.querySelector('input'); inp.focus(); inp.select();
+  function commit(){var v=parseFloat(inp.value);LS.data[idx].ar=isNaN(v)?0:v;LS.data[idx]._manual=true;LS.data[idx]._auto=false;LS.data[idx]._arSource='manual';lsSave();renderView();}
+  inp.addEventListener('blur',commit);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')inp.blur();else if(e.key==='Escape')renderView();});
+}
+
+function viewTrend(){
+  var months=uniq(LS.data.map(function(r){return r.month;})).sort();
+  var combos=[['FLN','IB'],['FLN','OB'],['FLN','WH'],['EPC','OB']];
+  var h='<div class="ls-note">월별 마진율 추이 — 고객·구분별. AR 입력분만 마진율 계산.</div>'+
+    '<div class="ls-tw" style="margin-bottom:18px"><table class="ls-tbl"><thead><tr><th class="l">고객·구분</th>'+
+    months.map(function(m){return '<th>'+m.slice(5)+'월<br><span style="font-weight:400;font-size:9px">AP / AR / 마진율</span></th>';}).join('')+'</tr></thead><tbody>';
+  combos.forEach(function(cs){var c=cs[0],s=cs[1];
+    h+='<tr><td class="l"><b>'+c+'</b> '+(s==='IB'?'I/B':s==='OB'?'O/B':'창고')+'</td>';
+    months.forEach(function(m){var rs=LS.data.filter(function(r){return r.customer===c&&r.segment===s&&r.month===m;});
+      if(!rs.length){h+='<td style="color:#ccc">—</td>';return;}
+      var ap=0,ar=0;rs.forEach(function(r){ap+=r.ap||0;ar+=r.ar||0;});var p=pct(ar,ap);
+      h+='<td><div style="font-size:10px;color:#888">'+fmt(ap)+' / '+fmt(ar)+'</div><div class="'+mgClass(p)+'">'+(p==null?'AR미입력':p.toFixed(1)+'%')+'</div></td>';});
+    h+='</tr>';});
+  h+='</tbody></table></div>';
+  h+='<h3 style="margin:14px 0 6px;font-size:15px">변동항목 정의 · 당월 이슈 · 비고</h3><div class="ls-note">변동 가능 항목과 당월 이슈를 기록하세요. 자동 저장.</div><div id="lsNotes">'+
+    months.map(function(m){return '<div style="margin-bottom:10px"><label style="font-weight:700">'+m+' 이슈/비고</label>'+
+      '<textarea class="ls-ta" data-m="'+m+'" placeholder="예: 5월 고박+상하차+취소 3종이 51.2%로 급증 → 수익률 48.7%로 하락">'+esc(LS.notes[m]||'')+'</textarea></div>';}).join('')+'</div>';
+  return h;
+}
+function bindNotes(){document.querySelectorAll('#lsNotes textarea').forEach(function(t){t.addEventListener('input',function(){LS.notes[t.dataset.m]=t.value;nSave();});});}
+
+function viewRules(){
+  var h='<div class="ls-hint">⚙ AR이 비어있는 항목에 적용할 <b>수신단가 규칙</b>. 저장 후 상단 <b>⚙ AR 자동산출</b>. 모드: <b>마진율%</b>=AP/(1−r) · <b>마크업%</b>=AP×(1+r) · <b>정액$</b>=AP+r · <b>판가×volume</b>=단가×volume.</div>'+
+    '<div style="margin-bottom:10px"><button class="ls-btn primary" id="lsAddRule">+ 규칙 추가</button></div>'+
+    '<table class="ls-tbl" style="max-width:920px"><thead><tr><th class="l">고객</th><th class="l">구분</th><th class="l">프로젝트(*=전체)</th><th class="l">모드</th><th>비율/단가</th><th></th></tr></thead><tbody>';
+  LS.rules.forEach(function(r,i){
+    h+='<tr><td class="l"><input type="text" data-i="'+i+'" data-f="customer" value="'+esc(r.customer)+'" style="width:64px"></td>'+
+      '<td class="l"><select data-i="'+i+'" data-f="segment"><option '+(r.segment==='OB'?'selected':'')+'>OB</option><option '+(r.segment==='IB'?'selected':'')+'>IB</option><option '+(r.segment==='WH'?'selected':'')+'>WH</option></select></td>'+
+      '<td class="l"><input type="text" data-i="'+i+'" data-f="project" value="'+esc(r.project)+'" style="width:190px"></td>'+
+      '<td class="l"><select data-i="'+i+'" data-f="mode">'+
+        '<option value="percent" '+(r.mode==='percent'?'selected':'')+'>마진율%</option>'+
+        '<option value="markup" '+(r.mode==='markup'?'selected':'')+'>마크업%</option>'+
+        '<option value="fixed" '+(r.mode==='fixed'?'selected':'')+'>정액$</option>'+
+        '<option value="fixed_unit" '+(r.mode==='fixed_unit'?'selected':'')+'>판가×volume</option></select></td>'+
+      '<td><input type="number" step="0.01" data-i="'+i+'" data-f="rate" value="'+r.rate+'" style="width:84px"></td>'+
+      '<td><button class="ls-btn" data-del="'+i+'">삭제</button></td></tr>';});
+  h+='</tbody></table>'; return h;
+}
+function bindRules(){
+  document.querySelectorAll('#lsBody [data-f]').forEach(function(el){el.addEventListener('change',function(){
+    var i=+el.dataset.i,f=el.dataset.f;LS.rules[i][f]=(f==='rate')?(parseFloat(el.value)||0):el.value;rSave();});});
+  var add=document.getElementById('lsAddRule'); if(add)add.addEventListener('click',function(){LS.rules.push({customer:'EPC',segment:'OB',project:'*',mode:'percent',rate:73});rSave();renderView();});
+  document.querySelectorAll('#lsBody [data-del]').forEach(function(b){b.addEventListener('click',function(){LS.rules.splice(+b.dataset.del,1);rSave();renderView();});});
+}
+function computeAR(rec,rule){var r=rule.rate||0,ap=rec.ap||0;
+  if(rule.mode==='percent'){var d=1-r/100;return d>0?ap/d:null;}
+  if(rule.mode==='markup')return ap*(1+r/100);
+  if(rule.mode==='fixed')return ap+r;
+  if(rule.mode==='fixed_unit'){var v=rec.volume||1;return r*v;}
+  return null;}
+function matchRule(rec){var proj=normProj(rec.project).toLowerCase();var best=null;
+  LS.rules.forEach(function(rl){
+    if(rl.customer!=='*'&&rl.customer!==rec.customer)return;
+    if(rl.segment!=='*'&&rl.segment!==rec.segment)return;
+    var rp=(rl.project||'*').trim();
+    if(rp!=='*'&&rp.toLowerCase()!==proj)return;
+    if(!best||(rp!=='*'))best=rl;});
+  return best;}
+function applyAutoAR(){var n=0;
+  LS.data.forEach(function(r){if(r._manual)return;if((r.ar||0)>0&&r._arSource==='status')return;if((r.ar||0)>0&&!r._auto)return;
+    var rl=matchRule(r);if(!rl||!(r.ap>0))return;var v=computeAR(r,rl);if(v==null)return;r.ar=+v.toFixed(2);r._auto=true;n++;});
+  lsSave();renderView();alert(n+'개 행에 수신단가 규칙으로 AR 자동산출 완료.');}
+
+function exportCSV(){
+  var rows=filtered().slice().sort(function(a,b){return a.customer.localeCompare(b.customer)||normProj(a.project).localeCompare(normProj(b.project));});
+  var head=['고객','월','구분','프로젝트','제품','인보이스/컨테이너','BL','AP','AR','마진','마진율%'];var lines=[head.join(',')];
+  rows.forEach(function(r){var ar=r.ar||0,ap=r.ap||0,p=pct(ar,ap);
+    lines.push([r.customer,r.month,r.segment,'"'+normProj(r.project)+'"','"'+(r.product||'')+'"','"'+(r.invoice||'')+'"','"'+(r.bl||'')+'"',ap.toFixed(2),ar.toFixed(2),(ar-ap).toFixed(2),(p==null?'':p.toFixed(1))].join(','));});
+  var blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ACE_물류비정산_DB.csv';a.click();}
+
+/* ===== 데이터 업로드 (AP/AR/창고 드래그앤드롭) ===== */
+function ls_num(v){if(v==null)return 0;if(typeof v==='number')return v;var s=String(v).replace(/[$,\s]/g,'').replace(/[()]/g,'');var n=parseFloat(s);return isNaN(n)?0:n;}
+function ls_txt(v){return v==null?'':String(v).trim();}
+function lhRows(ws){return XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});}
+function lhHeader(rs,must){for(var i=0;i<Math.min(rs.length,8);i++){var r=rs[i]||[];var j=r.map(function(c){return ls_txt(c).toLowerCase();}).join('|');var ok=must.every(function(m){return j.indexOf(m.toLowerCase())>=0;});if(ok){var map={};r.forEach(function(c,idx){var k=ls_txt(c).replace(/\s+/g,' ').toLowerCase();if(k&&!(k in map))map[k]=idx;});return {row:i,map:map};}}return null;}
+function lhCol(map){var cands=[].slice.call(arguments,1);var a,k;for(a=0;a<cands.length;a++){if(map[cands[a].toLowerCase()]!=null)return map[cands[a].toLowerCase()];}for(a=0;a<cands.length;a++){var cl=cands[a].toLowerCase();for(k in map){if(k.indexOf(cl)>=0)return map[k];}}return -1;}
+function parseOB(wb){var ws=wb.Sheets[wb.SheetNames[0]];var rs=lhRows(ws);var h=lhHeader(rs,['cont','total']);if(!h)return [];
+  var cC=lhCol(h.map,'cont no.','cont no','contno','cont'),cP=lhCol(h.map,'project'),cI=lhCol(h.map,'item'),cV=lhCol(h.map,'volume'),cT=lhCol(h.map,'total(included vat)','total (included vat)','total(included','total (included');
+  var out=[];for(var i=h.row+1;i<rs.length;i++){var r=rs[i]||[];var cont=ls_txt(r[cC]);if(!cont||/total/i.test(cont))continue;out.push({key:cont,invoice:cont,project:ls_txt(r[cP]),product:ls_txt(r[cI]),volume:cV>=0?ls_num(r[cV]):0,total:ls_num(r[cT])});}return out;}
+function parseIB(wb){var out=[];wb.SheetNames.forEach(function(sn){if(!/ocean|air/i.test(sn))return;var rs=lhRows(wb.Sheets[sn]);var h=lhHeader(rs,['invoice','total']);if(!h)return;
+  var cInv=lhCol(h.map,'invoice'),cBL=lhCol(h.map,'b/l no.','b/l no','bl no','b/l'),cP=lhCol(h.map,'project name','project','pjt'),cD=lhCol(h.map,'description','desc'),cT=lhCol(h.map,'total usd (included v','total usd(included','total usd (included','total(included vat)','total usd');
+  if(cT<0)cT=lhCol(h.map,'total surcharge');
+  for(var i=h.row+1;i<rs.length;i++){var r=rs[i]||[];var inv=ls_txt(r[cInv]),bl=ls_txt(r[cBL]);if((!inv&&!bl)||/total/i.test(inv)||/total/i.test(bl))continue;var key=inv||bl;out.push({key:key,invoice:inv,bl:bl,project:ls_txt(r[cP]),product:ls_txt(r[cD]),total:ls_num(r[cT])});}});return out;}
+function extractWHTotal(wb){var best=0;wb.SheetNames.forEach(function(sn){var aoa=lhRows(wb.Sheets[sn]);for(var i=0;i<aoa.length;i++){var row=aoa[i]||[];for(var j=0;j<row.length;j++){if(typeof row[j]==='string'&&/total/i.test(row[j])){for(var k=j+1;k<row.length;k++){var v=ls_num(row[k]);if(v>best&&v<1e8)best=v;}}}}});return best;}
+function guessName(name){var g={customer:'FLN',project:'',product:'창고'};var up=name.toUpperCase();
+  if(up.indexOf('EPC')>=0)g.customer='EPC';
+  if(up.indexOf('CUBE')>=0){g.product='창고-Cube';g.project='Cube';}else if(up.indexOf('BATTERY')>=0){g.product='창고-Battery';g.project='Battery';}
+  return g;}
+function detectFile(wb,name){var up=name.toUpperCase();var g={customer:'',segment:'',month:'',side:'ap'};
+  var mm={JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'};
+  for(var k in mm){if(up.indexOf(k)>=0){g.month='2026-'+mm[k];break;}}
+  var km=/(\d{1,2})\s*월/.exec(name);if(!g.month&&km)g.month='2026-'+('0'+km[1]).slice(-2);
+  if(up.indexOf('EPC')>=0)g.customer='EPC';else if(up.indexOf('FLN')>=0||up.indexOf('FLUENCE')>=0)g.customer='FLN';
+  var allh='';wb.SheetNames.forEach(function(sn){var rs=lhRows(wb.Sheets[sn]);for(var i=0;i<Math.min(rs.length,8);i++){allh+=(rs[i]||[]).map(function(c){return ls_txt(c).toLowerCase();}).join('|')+'|';}});
+  if(allh.indexOf('invoice')>=0&&(allh.indexOf('b/l')>=0||allh.indexOf('bl no')>=0))g.segment='IB';
+  else if(allh.indexOf('cont')>=0&&allh.indexOf('total')>=0)g.segment='OB';
+  else if(/debit note|final summary|storage|warehouse/i.test(name)||allh.indexOf('storage')>=0)g.segment='WH';
+  if(/(^|[\/\\])ace[ _]/i.test(name)||/ace logistics|ace_logistics/i.test(name))g.side='ar';
+  return g;}
+function viewUpload(){
+  var src=LS.data.filter(function(r){return r._src==='file'||r.segment==='WH'||r._whUpload;});
+  var h='<div class="ls-hint">⬆ <b>AP/AR/창고 엑셀을 끌어다 놓으면</b> 브라우저가 양식을 자동 인식해 파싱합니다. 고객·구분·월·AP/AR을 확인 후 <b>추가</b>하면 인보이스/컨테이너 키로 기존 행에 병합되고, <b>AP 추가 시 수신단가 규칙으로 AR이 자동 정리</b>됩니다. (OB=컨테이너 키, IB=인보이스 키, 창고=총액)</div>'+
+    '<div class="ls-dz" id="lsDZ"><div class="ic">⬆📄</div><div class="t">AP/AR/창고 엑셀을 여기에 드래그앤드롭</div><div class="s">또는 클릭하여 선택 (.xlsx) · 여러 파일 동시 가능 · HTNS/Lotte/Sebang/ACE 양식 자동 인식</div><input type="file" id="lsFile" accept=".xlsx,.xls" multiple style="display:none"></div>'+
+    '<div id="lsUpForm"></div>'+
+    '<h3 style="margin:14px 0 6px;font-size:15px">업로드로 추가된 행 ('+src.length+')</h3>'+
+    '<div class="ls-tw"><table class="ls-tbl"><thead><tr><th class="l">고객</th><th>월</th><th>구분</th><th class="l">프로젝트</th><th class="l">키</th><th>AP</th><th>AR</th><th></th></tr></thead><tbody>';
+  src.slice(0,400).forEach(function(r){var idx=LS.data.indexOf(r);
+    h+='<tr><td class="l">'+r.customer+'</td><td>'+r.month.slice(5)+'월</td><td><span class="ls-seg '+r.segment+'">'+(r.segment==='OB'?'O/B':r.segment==='IB'?'I/B':'창고')+'</span></td><td class="l">'+esc(normProj(r.project))+'</td><td class="l" style="max-width:240px;overflow:hidden;text-overflow:ellipsis">'+esc(r.invoice||r.key||'')+'</td><td>'+fmt2(r.ap)+'</td><td>'+fmt2(r.ar)+'</td><td><button class="ls-btn" data-updel="'+idx+'">삭제</button></td></tr>';});
+  if(!src.length) h+='<tr><td colspan="8" class="l" style="color:#999">아직 업로드로 추가된 행이 없습니다. 위에 엑셀을 끌어다 놓으세요. (초기 시드 데이터는 여기 표시되지 않음)</td></tr>';
+  h+='</tbody></table></div>';
+  return h;
+}
+function bindUpload(){
+  var dz=document.getElementById('lsDZ'),file=document.getElementById('lsFile');
+  if(dz){
+    dz.addEventListener('click',function(){file.click();});
+    ['dragenter','dragover'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.add('over');});});
+    ['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.remove('over');});});
+    dz.addEventListener('drop',function(e){handleFiles(e.dataTransfer.files);});
+    file.addEventListener('change',function(){handleFiles(file.files);});
+  }
+  document.querySelectorAll('#lsBody [data-updel]').forEach(function(b){b.addEventListener('click',function(){
+    if(confirm('이 행을 삭제하시겠습니까?')){LS.data.splice(+b.dataset.updel,1);lsSave();renderView();}});});
+}
+function handleFiles(fileList){
+  if(!window.XLSX){alert('xlsx 라이브러리 미로드');return;}
+  var files=Array.prototype.slice.call(fileList);var items=[];var pending=files.length;if(!pending)return;
+  files.forEach(function(f){var reader=new FileReader();reader.onload=function(e){
+    var item={name:f.name,customer:'',segment:'',month:'',side:'ap',rows:[],total:0};
+    try{var wb=XLSX.read(e.target.result,{type:'array'});var d=detectFile(wb,f.name);
+      item.customer=d.customer;item.segment=d.segment;item.month=d.month;item.side=d.side;
+      if(d.segment==='OB')item.rows=parseOB(wb);
+      else if(d.segment==='IB')item.rows=parseIB(wb);
+      else if(d.segment==='WH'){var t=extractWHTotal(wb);var g=guessName(f.name);if(!item.customer)item.customer=g.customer;item.rows=[{key:f.name,invoice:f.name.replace(/\.xlsx?$/i,''),project:g.project,product:g.product,total:t}];if(d.side==='ap')item.side='ap';}
+      item.total=item.rows.reduce(function(s,r){return s+(r.total||0);},0);
+    }catch(err){console.warn('parse err',f.name,err);}
+    items.push(item);if(--pending===0)showUploadForm(items);
+  };reader.readAsArrayBuffer(f);});
+}
+function showUploadForm(items){
+  var months=uniq(LS_SEED.map(function(r){return r.month;})).sort();
+  function monthSel(i,sel){return '<select data-i="'+i+'" data-f="month"><option value="">선택</option>'+months.map(function(m){return '<option '+(m===sel?'selected':'')+'>'+m+'</option>';}).join('')+'</select>';}
+  function segSel(i,sel){return '<select data-i="'+i+'" data-f="segment">'+['OB','IB','WH'].map(function(s){return '<option '+(s===sel?'selected':'')+'>'+s+'</option>';}).join('')+'</select>';}
+  function custSel(i,sel){return '<select data-i="'+i+'" data-f="customer"><option value="">선택</option><option '+(sel==='FLN'?'selected':'')+'>FLN</option><option '+(sel==='EPC'?'selected':'')+'>EPC</option></select>';}
+  function sideSel(i,sel){return '<select data-i="'+i+'" data-f="side"><option value="ap" '+(sel==='ap'?'selected':'')+'>AP 지급</option><option value="ar" '+(sel==='ar'?'selected':'')+'>AR 수신</option></select>';}
+  var h='<div style="background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:12px;margin-bottom:14px">'+
+    '<div style="font-weight:700;margin-bottom:8px">인식 결과 확인 후 추가 — 잘못 인식된 항목은 드롭다운으로 수정하세요</div>'+
+    '<div class="ls-tw"><table class="ls-tbl"><thead><tr><th class="l">파일</th><th class="l">고객</th><th class="l">구분</th><th>월</th><th class="l">AP/AR</th><th>행수</th><th>금액합</th></tr></thead><tbody>';
+  items.forEach(function(it,i){
+    h+='<tr><td class="l" style="max-width:240px;overflow:hidden;text-overflow:ellipsis" title="'+esc(it.name)+'">'+esc(it.name)+'</td>'+
+      '<td class="l">'+custSel(i,it.customer)+'</td><td class="l">'+segSel(i,it.segment)+'</td><td>'+monthSel(i,it.month)+'</td>'+
+      '<td class="l">'+sideSel(i,it.side)+'</td><td>'+it.rows.length+'</td><td>'+fmt2(it.total)+'</td></tr>';});
+  h+='</tbody></table></div><div style="margin-top:10px"><button class="ls-btn primary" id="lsUpAdd">＋ DB에 추가 / AR 자동정리</button> <button class="ls-btn" id="lsUpCancel">취소</button>'+
+    '<span style="margin-left:10px;font-size:11px;color:#6b7280">※ 고객·구분·월 미지정 파일은 제외됩니다.</span></div></div>';
+  document.getElementById('lsUpForm').innerHTML=h;
+  document.querySelectorAll('#lsUpForm [data-f]').forEach(function(el){el.addEventListener('change',function(){
+    var i=+el.dataset.i,f=el.dataset.f;items[i][f]=el.value;});});
+  document.getElementById('lsUpCancel').addEventListener('click',function(){document.getElementById('lsUpForm').innerHTML='';});
+  document.getElementById('lsUpAdd').addEventListener('click',function(){
+    var skipped=0,added=0,upd=0,used=0;
+    items.forEach(function(it){
+      if(!it.customer||!it.segment||!it.month||!it.rows.length){skipped++;return;}
+      used++;var res=mergeItem(it);added+=res.added;upd+=res.upd;});
+    applyAutoARSilent();lsSave();renderView();
+    alert('업로드 반영 완료\n· 파일 '+used+'개 처리'+(skipped?(' (제외 '+skipped+'개)'):'')+'\n· 신규 '+added+'행 · 갱신 '+upd+'행\n· 빈 AR은 수신단가 규칙으로 자동정리됨');});
+}
+function mergeItem(it){var added=0,upd=0;
+  it.rows.forEach(function(p){
+    if(!p.key)return;var rec=null;
+    for(var i=0;i<LS.data.length;i++){var r=LS.data[i];if(r.customer===it.customer&&r.month===it.month&&r.segment===it.segment&&r.key===p.key){rec=r;break;}}
+    if(!rec){rec={customer:it.customer,month:it.month,segment:it.segment,key:p.key,invoice:p.invoice||p.key,bl:p.bl||'',project:p.project||'',product:p.product||'',ap:0,ar:0,_src:'file'};LS.data.push(rec);added++;}else{upd++;rec._src=rec._src||'file';}
+    if(it.side==='ap'){rec.ap=p.total;}
+    else{rec.ar=p.total;rec._arSource='file';rec._manual=false;rec._auto=false;}
+    if(p.project&&(!rec.project||normProj(rec.project).length<2))rec.project=p.project;
+    if(p.product&&!rec.product)rec.product=p.product;
+    if(p.volume)rec.volume=p.volume;
+  });
+  return {added:added,upd:upd};}
+function applyAutoARSilent(){LS.data.forEach(function(r){
+  if(r._manual)return;
+  if((r.ar||0)>0&&(r._arSource==='status'||r._arSource==='file'))return;
+  if((r.ar||0)>0&&!r._auto)return;
+  var rl=matchRule(r);if(!rl||!(r.ap>0))return;var v=computeAR(r,rl);if(v==null)return;r.ar=+v.toFixed(2);r._auto=true;});}
+
+/* ===== SharePoint 영속화 (logistics_settle.json) — 기존 spReadJson/spWriteJson 재사용 ===== */
+var LS_SP_FILE='logistics_settle.json';
+function lsLoadSP(){
+  if(typeof isSharePointReady!=='function'||!isSharePointReady()){
+    alert('SharePoint 미연결 상태입니다 (M365 로그인/Azure 등록 필요).\n현재는 브라우저 LocalStorage에 저장됩니다.');return;}
+  if(!confirm('SharePoint의 정산 데이터('+LS_SP_FILE+')를 불러옵니다.\n현재 화면의 편집내용은 덮어쓰입니다. 계속할까요?'))return;
+  spReadJson(LS_SP_FILE).then(function(remote){
+    var rows=Array.isArray(remote)?remote:(remote&&Array.isArray(remote.rows)?remote.rows:null);
+    if(!rows){alert('SharePoint에 정산 데이터가 없습니다. 먼저 [SP 저장]으로 업로드하세요.');return;}
+    LS.data=rows;
+    if(remote&&remote.notes){LS.notes=remote.notes;nSave();}
+    if(remote&&Array.isArray(remote.rules)){LS.rules=remote.rules;rSave();}
+    lsSave();renderView();
+    alert('SharePoint에서 정산 데이터 '+rows.length+'행을 불러왔습니다.');
+  }).catch(function(e){alert('SharePoint 불러오기 실패: '+(e&&e.message||e));});
+}
+function lsPushSP(){
+  lsSave(); // 항상 로컬 먼저
+  if(typeof isSharePointReady!=='function'||!isSharePointReady()){
+    alert('SharePoint 미연결 — 브라우저 LocalStorage에 저장되었습니다.\n(M365 로그인 후 [SP 저장]을 누르면 SharePoint에 올라갑니다.)');return;}
+  var by=(typeof currentM365User!=='undefined'&&currentM365User)?currentM365User.email:'unknown';
+  var payload={rows:LS.data,notes:LS.notes,rules:LS.rules,meta:{last_updated:new Date().toISOString(),updated_by:by,rows:LS.data.length}};
+  spWriteJson(LS_SP_FILE,payload).then(function(){
+    alert('SharePoint에 정산 데이터 '+LS.data.length+'행을 저장했습니다. ('+LS_SP_FILE+')');
+  }).catch(function(e){alert('SharePoint 저장 실패: '+(e&&e.message||e));});
+}
+})();
+
 // 서브탭 전환
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.logistics-sub-tab');
@@ -17747,6 +18230,11 @@ function renderLogisticsSubPanel(sub) {
     upload: '엑셀 업로드'
   };
 
+  // 정산 (AP→AR) — 신규 통합 모듈
+  if (sub === 'settle') {
+    if (typeof ls_render === 'function') ls_render(panel);
+    return;
+  }
   // 종합 대시보드 — Phase 4-A 풀 렌더
   if (sub === 'overview') {
     renderLogisticsOverview();
