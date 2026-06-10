@@ -3777,6 +3777,148 @@ const LOGISTICS_INITIAL_DATA = {"meta":{"last_updated":"2026-05-17","fx_rate":15
   setTimeout(init,700); setTimeout(init,1600);
 })();
 </script>
+<style id="ace-ing-css">#tab-ingest-map .ing-up{margin:12px 0;}#tab-ingest-map .ing-dz{border:2px dashed #9ad9d3;border-radius:12px;padding:18px;text-align:center;font-size:13px;color:#1f7b78;background:#f3fbfa;cursor:pointer;transition:all .15s;}#tab-ingest-map .ing-dz:hover,#tab-ingest-map .ing-dz.over{background:#e6f4f2;border-color:#2B9595;}#tab-ingest-map .im-card{margin-top:10px;border-radius:10px;padding:12px 14px;border:1px solid;}#tab-ingest-map .im-card.ok{background:#f0faf6;border-color:#9ad9c0;}#tab-ingest-map .im-card.no{background:#fdf2f2;border-color:#e8b9b9;}#tab-ingest-map .im-h{font-size:12.5px;color:#16302e;margin-bottom:6px;}#tab-ingest-map .im-badge{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:12px;margin-right:4px;}#tab-ingest-map .im-badge.ok{background:#127a3e;color:#fff;}#tab-ingest-map .im-badge.no{background:#a32d2d;color:#fff;}#tab-ingest-map .im-sheets{font-size:11px;color:#5a6c6a;margin:4px 0;}#tab-ingest-map .im-sheets code{background:#eef4f4;padding:1px 6px;border-radius:4px;margin:0 2px;font-size:10.5px;}#tab-ingest-map .im-chk{font-size:11px;font-weight:700;margin-right:8px;}#tab-ingest-map .im-chk.ok{color:#127a3e;}#tab-ingest-map .im-chk.no{color:#bb6a10;}#tab-ingest-map .im-keys{font-size:11px;color:#5a6c6a;margin:4px 0;}#tab-ingest-map .im-btns{margin-top:8px;display:flex;gap:6px;}#tab-ingest-map .ing-filter{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;}#tab-ingest-map .ing-fbtn{font-size:12.5px;font-weight:700;padding:8px 16px;border:1px solid var(--border-strong);background:#fff;color:#3f615e;border-radius:9px;cursor:pointer;font-family:inherit;}#tab-ingest-map .ing-fbtn.active{background:linear-gradient(135deg,#2E948F,#247f7b);color:#fff;border-color:#247f7b;}#tab-ingest-map .ing-fbtn b{margin-left:4px;opacity:.85;}#tab-ingest-map .ing-table{font-size:12px;}#tab-ingest-map .ing-table td{vertical-align:top;line-height:1.5;}#tab-ingest-map .ing-area{display:inline-block;font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:7px;white-space:nowrap;color:#fff;}#tab-ingest-map .a-매출{background:#2552c0;}#tab-ingest-map .a-발주{background:#2B9595;}#tab-ingest-map .a-생산{background:#247f7b;}#tab-ingest-map .a-자재{background:#8a5a1a;}#tab-ingest-map .a-물류{background:#1f6f6b;}#tab-ingest-map .a-채권{background:#a32d6a;}#tab-ingest-map .ing-badge{display:inline-block;font-size:10px;font-weight:800;padding:3px 8px;border-radius:13px;white-space:nowrap;}#tab-ingest-map .ing-badge.xl{background:#e6f4f2;color:#1f7b78;}#tab-ingest-map .ing-badge.ol{background:#fdeedd;color:#bb6a10;}#tab-ingest-map .ing-file{min-width:200px;}#tab-ingest-map .ing-file b{color:#16302e;}#tab-ingest-map .ing-sub{font-size:10.5px;color:#5a6c6a;margin-top:2px;}#tab-ingest-map .ing-fmt{min-width:300px;max-width:380px;}#tab-ingest-map .ing-hdr{font-size:11px;font-weight:700;color:#1f6f6b;}#tab-ingest-map .ing-keys{font-size:11px;color:#5a6c6a;margin-top:2px;}#tab-ingest-map .ing-arrow{color:#2B9595;font-weight:800;}#tab-ingest-map .ing-ds{font-size:10.5px;background:#f1f5f5;color:#2c3a39;padding:2px 6px;border-radius:5px;}#tab-ingest-map .ing-mode{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:12px;}#tab-ingest-map .ing-mode.auto{background:#e6f0fb;color:#2552c0;}#tab-ingest-map .ing-mode.man{background:#eef2f2;color:#5a6c6a;}#tab-ingest-map .ing-st{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:12px;}#tab-ingest-map .ing-st.on{background:#e3f3e8;color:#127a3e;}#tab-ingest-map .ing-st.off{background:#fbeaea;color:#a32d2d;}#tab-ingest-map tr.ing-off td:not(.ing-act){opacity:.5;}#tab-ingest-map .ing-notec{font-size:11px;color:#8a7a4a;background:#fffaf0;padding:5px 11px;}#tab-ingest-map .ing-table td.ing-act,#tab-ingest-map .ing-table th.ing-act{position:sticky;right:0;background:#fff;text-align:center;white-space:nowrap;min-width:104px;box-shadow:-1px 0 0 #e3eded;}#tab-ingest-map .ing-table thead th.ing-act{background:#247f7b;}#tab-ingest-map .ing-editing td{background:#fffdf3;}#tab-ingest-map .ing-legend{font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.6;}</style>
+<script id="ace-ing-js">(function(){
+  var KEY='ace_ingest_map_v3';
+  var SEED=[
+    // 매출
+    {id:'s1',area:'매출',src:'excel',file:'2본부_매출실적관리대장_*.xlsm',sheet:'주간업데이트',header:'Row 2 (Row1=그룹라벨, Row3~데이터)',keyCols:'고객사·구분·프로젝트·변동수량·변동매출월·변동수주금액(억)·제품군·제품분류·생산지·PO#·서진PO#·수주/출하일·인코텀즈 (AD~AQ 14컬럼)',menu:'매출',tab:'매출실적관리 / 현황판(ww24)',dataset:'weeklyData · ace_sales_master',mode:'manual',active:true,note:'주차별 스냅샷 누적'},
+    // 발주
+    {id:'b1',area:'발주',src:'excel',file:'Cube, GSP PJT INFO Sheet_*.xlsx',sheet:'Cube / GSP VN / GSP US / Smartstack VN',header:'시트별 상이 (Cube·GSP VN=R4, GSP US=R2, Smartstack=R3)',keyCols:'PJT·TLA Part#·PO Number·서진PO·Color·Battery·Type·Qty·FCA·Stat-X·Chiller/HVAC',menu:'발주',tab:'발주 현황 (PJT INFO)',dataset:'ace_pjt_info_v1',mode:'manual',active:true,note:''},
+    {id:'b2',area:'발주',src:'outlook',file:'발신: *@fluenceenergy.com · 첨부 PO*.pdf',sheet:'(PDF)',header:'-',keyCols:'PO# · 품목 · 수량 · 납기 · FCA',menu:'발주',tab:'PO 변환 → PO 인박스',dataset:'poInbox · ace_po_history',mode:'auto',active:true,note:'Fluence PO 양식 자동 파싱(pdf.js)'},
+    {id:'b3',area:'발주',src:'outlook',file:'발신: *@epcpower.com · 첨부 PO*.pdf',sheet:'(PDF)',header:'-',keyCols:'PO# · 품목 · 수량 · 납기',menu:'발주',tab:'PO 변환',dataset:'poInbox',mode:'auto',active:true,note:'EPC Power PO 양식'},
+    {id:'b4',area:'발주',src:'excel',file:'FLN 고객사 *월vs*월 FCST비교검토.xlsx',sheet:'FCST',header:'고객사·월별',keyCols:'고객사·프로젝트·월별 FCST 수량·전월 比 증감',menu:'발주',tab:'FLN Fcst',dataset:'ace_fcst_v1',mode:'manual',active:true,note:'월별 FCST 비교'},
+    // 생산
+    {id:'p1',area:'생산',src:'excel',file:'서진 생산 *.xlsx',sheet:'VN / US 제작',header:'제작 헤더행 인식',keyCols:'프로젝트·고객·제품·PO·완료(done)·잔여(remain)·진도율·이슈',menu:'생산',tab:'생산 주간현황 (제작 현황)',dataset:'productionData',mode:'manual',active:true,note:'제작현황 탭 드래그-드롭'},
+    {id:'p2',area:'생산',src:'excel',file:'EPC Power Weekly Delivery Schedule_*.xlsx',sheet:'Schedule',header:'R4=주차, R6=요일, R7=날짜',keyCols:'고객(OE/Prevalon/LG/CS…) × 주차(W15~W35) 일자별 납품수량',menu:'생산',tab:'주차별 출하전망 (EPC·FLN)',dataset:'ace_epc_weekly_v1',mode:'manual',active:true,note:''},
+    {id:'p3',area:'생산',src:'excel',file:'GSP Smartstack 프로젝트 스펙_*.xlsx',sheet:'제품×사이트 (GSP5000/2000·VN/US, Smartstack)',header:'Row 5 (Smartstack=R2)',keyCols:'Project·Design/Battery version·UL/IEC·Hour·Qty·FCA·Chiller·HVAC·Plumbing·Battery Integration',menu:'생산',tab:'프로젝트 BOM',dataset:'ace_prod_bom_v1',mode:'manual',active:true,note:''},
+    {id:'p4',area:'생산',src:'excel',file:'ACE MPS *.xlsx',sheet:'MPS',header:'헤더행 인식',keyCols:'프로젝트·SO#·상태·System Start·Enclosure 출하·현장 납품·ACE PO#',menu:'생산',tab:'MPS 현황',dataset:'ace_mps_status_v1',mode:'manual',active:true,note:''},
+    {id:'p5',area:'생산',src:'excel',file:'베트남 생산-출하-재고 dashboard_*.xlsx',sheet:'Dashboard·Summary·주별/월별 실적·제품별 생산실적',header:'제품별 생산/출고/재고',keyCols:'제품(GSP/SSTK/EPC)·생산(계획/실적)·출고(계획/실적)·재고(완제품/재공품)·주별',menu:'생산',tab:'생산 주간현황 / 주차별 출하전망',dataset:'productionData · ace_epc_weekly_v1',mode:'manual',active:true,note:'VN 생산-출하-재고 통합'},
+    {id:'p6',area:'생산',src:'excel',file:'EPC_Power제작사양_구조사양정리_*.xlsx',sheet:'제작/구조 사양',header:'사양 항목행',keyCols:'M10 제작사양·구조사양·부품 스펙',menu:'생산',tab:'프로젝트 BOM (EPC)',dataset:'ace_prod_bom_v1',mode:'manual',active:false,note:'EPC M10 BOM 확장 예정'},
+    // 자재
+    {id:'m1',area:'자재',src:'excel',file:'SMARTSTACK 장납기 자재.xlsx',sheet:'장납기 자재',header:'ERP CODE 헤더행',keyCols:'ERP CODE·NAME·SPECIFICATION·MOQ·MPQ·L/T(주)·Unit·Supplier',menu:'자재',tab:'기준정보 (장납기 자재)',dataset:'ace_mat_master',mode:'manual',active:true,note:''},
+    {id:'m2',area:'자재',src:'excel',file:'SIBA_Fuse_Price_*.xlsx',sheet:'Price Summary',header:'품목·단가',keyCols:'품목·기존단가·인상단가·인상율·적용일',menu:'자재',tab:'단가 조회',dataset:'ace_mat_price',mode:'manual',active:false,note:'단가 인상 반영 예정'},
+    // 물류
+    {id:'l1',area:'물류',src:'excel',file:'ACE_물류비_Master_*.xlsx',sheet:'월별 Summary · EPC PO · FLN PO · IB/OB/WH_Master',header:'월별Summary=R4',keyCols:'고객사(FLN/EPC)·구분(IB/OB/WH)·유형(AP/AR)·항목·월별금액·월매출(예상)',menu:'물류',tab:'물류비 관리 (엑셀 업로드)',dataset:'logisticsData · ACE_LOGI_FORECAST',mode:'manual',active:true,note:'예측금액 포함'},
+    {id:'l2',area:'물류',src:'excel',file:'(LGL*) * 해상 운임*견적_*.xlsx',sheet:'운임 견적',header:'구간·운임',keyCols:'구간·컨테이너·해상운임·FSC·견적단가',menu:'물류',tab:'물류비 관리 (입찰/견적)',dataset:'logisticsData (Bidding_Log)',mode:'manual',active:false,note:'해상운임 견적/입찰'},
+    // 채권
+    {id:'r1',area:'채권',src:'excel',file:'Cube 통합 미수금_*.xlsx / 미수채권관리양식.xlsx',sheet:'미수/인보이스',header:'인보이스 헤더행',keyCols:'고객·인보이스No·매출(AR)·수금(received)·미수(outstanding)·만기·통화',menu:'채권',tab:'인보이스 관리 / 미수채권',dataset:'arInvoices',mode:'manual',active:true,note:'영림원 ERP 연동 전 수기'},
+    {id:'r2',area:'채권',src:'outlook',file:'발신: 영림원 ERP · 인보이스 알림',sheet:'(메일/API)',header:'-',keyCols:'인보이스·수금 데이터',menu:'채권',tab:'ERP 인보이스',dataset:'arInvoices',mode:'auto',active:false,note:'API 명세 확정 후 활성'}
+  ];
+  function load(){ try{ var s=localStorage.getItem(KEY); if(s){ var d=JSON.parse(s); if(Array.isArray(d)) return d; } }catch(e){} var c=JSON.parse(JSON.stringify(SEED)); try{ localStorage.setItem(KEY,JSON.stringify(c)); }catch(e){} return c; }
+  function save(d){ try{ localStorage.setItem(KEY,JSON.stringify(d)); }catch(e){} }
+  function esc(s){ return (s==null?'':''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function canEdit(){ try{ return !document.body.classList.contains('ace-view-mode'); }catch(e){ return false; } }
+  var AREAS=['매출','발주','생산','자재','물류','채권'];
+  var areaFilter='all', editId=null, lastMatch=null;
+
+  function globRx(p){ try{ return new RegExp('^'+String(p).trim().replace(/[.+?^${}()|[\]\\]/g, '\\' + '$' + '&').replace(/\*/g, '.*')+'$','i'); }catch(e){ return null; } }
+  function matchRule(fname){ var rules=load();
+    for(var i=0;i<rules.length;i++){ var r=rules[i]; if(r.src!=='excel') continue;
+      var cands=String(r.file).split(/\s*\/\s*/);
+      for(var j=0;j<cands.length;j++){ var rx=globRx(cands[j]); if(rx&&rx.test(fname)) return r; } }
+    return null;
+  }
+
+  function ensureTab(){
+    if(document.querySelector('.tab[data-tab="ingest-map"]')) return;
+    var bar=document.querySelector('.tab-bar'); var main=document.querySelector('.main'); if(!bar||!main) return;
+    var btn=document.createElement('button'); btn.className='tab'; btn.setAttribute('data-tab','ingest-map'); btn.setAttribute('data-cat','utility'); btn.textContent='데이터 연동 관리';
+    var ref=document.querySelector('.tab[data-tab="org-perms"]'); if(ref&&ref.nextSibling) bar.insertBefore(btn, ref.nextSibling); else bar.appendChild(btn);
+    var uc=document.querySelector('.cat-btn[data-cat="utility"]'); if(uc&&uc.classList.contains('active')) btn.classList.add('cat-visible');
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+      document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+      btn.classList.add('active'); var pn=document.getElementById('tab-ingest-map'); if(pn) pn.classList.add('active');
+      if(window.setActiveCategory) setActiveCategory('utility', false);
+      window.openIngestMap();
+    });
+    var panel=document.createElement('div'); panel.className='tab-panel'; panel.id='tab-ingest-map';
+    panel.innerHTML='<div class="pos-head"><div><h2>데이터 연동 관리</h2><p>공유된 업로드 파일 기준 등록부 · <b>업로드→매칭확인→수정·추가·삭제·저장</b> (DB 설계 전 마스터)</p></div>'+
+      '<div style="display:flex;gap:8px;"><button class="btn btn-primary" data-edit-only onclick="ingAdd()" style="padding:8px 14px;font-size:12.5px;">+ 양식 추가</button><button class="btn btn-secondary" data-edit-only onclick="ingReset()" style="padding:8px 14px;font-size:12.5px;">기본값 복원</button></div></div>'+
+      '<div class="ing-up" id="ingUp"><div class="ing-dz" id="ingDz"><b>파일을 끌어다 놓거나 클릭</b> — 등록된 양식과 자동 매칭 확인<input type="file" id="ingFile" accept=".xlsx,.xls,.xlsm,.csv,.pdf" style="display:none;"></div><div id="ingMatch"></div></div>'+
+      '<div class="ing-filter" id="ingFilter"></div><div id="ingWrap"></div>';
+    main.appendChild(panel);
+    setTimeout(function(){ var dz=document.getElementById('ingDz'), fi=document.getElementById('ingFile');
+      if(dz&&fi){ dz.addEventListener('click',function(){fi.click();}); fi.addEventListener('change',function(){ if(fi.files[0]) ingHandleFile(fi.files[0]); });
+        dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');}); dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
+        dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over'); if(e.dataTransfer.files[0]) ingHandleFile(e.dataTransfer.files[0]);}); } },50);
+  }
+  window.openIngestMap=function(){ ensureTab(); window.renderIngestMap(); };
+
+  function ingHandleFile(file){
+    var rule=matchRule(file.name); var sheets=[];
+    function done(){ lastMatch={fname:file.name,rule:rule,sheets:sheets}; renderMatch(); }
+    if(/\.(xlsx|xlsm|xls)$/i.test(file.name) && window.XLSX){
+      var rd=new FileReader(); rd.onload=function(e){ try{ var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',bookSheets:true}); sheets=wb.SheetNames||[]; }catch(err){} done(); }; rd.onerror=done; rd.readAsArrayBuffer(file);
+    } else done();
+  }
+  function renderMatch(){
+    var el=document.getElementById('ingMatch'); if(!el||!lastMatch) return; var m=lastMatch;
+    var sheetHtml = m.sheets.length ? '<div class="im-sheets">파일 시트: '+m.sheets.map(function(s){return '<code>'+esc(s)+'</code>';}).join(' ')+'</div>' : '';
+    if(m.rule){ var r=m.rule;
+      var expSheets=String(r.sheet||'').split(/[\/·,]/).map(function(x){return x.trim();}).filter(Boolean);
+      var chk=expSheets.map(function(es){ var ok=m.sheets.some(function(s){ return s.indexOf(es)>=0||es.indexOf(s)>=0; }); return '<span class="im-chk '+(ok?'ok':'no')+'">'+(ok?'✓':'?')+' '+esc(es)+'</span>'; }).join('');
+      el.innerHTML='<div class="im-card ok"><div class="im-h"><span class="im-badge ok">매칭됨</span> <b>'+esc(m.fname)+'</b> → '+esc(r.area)+' · '+esc(r.menu)+' / '+esc(r.tab)+'</div>'+
+        sheetHtml+(chk?'<div class="im-sheets">기대 시트: '+chk+'</div>':'')+
+        '<div class="im-keys">양식 키컬럼: '+esc(r.keyCols)+'</div>'+
+        (canEdit()?'<div class="im-btns"><button class="bom-mini" onclick="ingEdit(\''+r.id+'\')">이 양식 수정</button>'+(!r.active?'<button class="bom-mini ok" onclick="ingToggle(\''+r.id+'\')">활성화</button>':'')+'<button class="bom-mini" onclick="ingClearMatch()">닫기</button></div>':'')+'</div>';
+    } else {
+      el.innerHTML='<div class="im-card no"><div class="im-h"><span class="im-badge no">미매칭</span> <b>'+esc(m.fname)+'</b> — 등록된 양식과 일치하지 않습니다</div>'+
+        sheetHtml+(canEdit()?'<div class="im-btns"><button class="bom-mini ok" onclick="ingAddFromFile()">이 파일로 새 양식 추가</button><button class="bom-mini" onclick="ingClearMatch()">닫기</button></div>':'')+'</div>';
+    }
+  }
+  window.ingClearMatch=function(){ lastMatch=null; var el=document.getElementById('ingMatch'); if(el) el.innerHTML=''; var fi=document.getElementById('ingFile'); if(fi) fi.value=''; };
+  window.ingAddFromFile=function(){ if(!canEdit()||!lastMatch)return; var d=load(); var id='n'+(Math.max(0,...d.map(function(x){return parseInt((x.id||'').replace(/\D/g,''))||0;}))+1);
+    var base=lastMatch.fname.replace(/[0-9]{6,8}/g,'*').replace(/_rev[.\d]*/i,'_*');
+    d.unshift({id:id,area:'생산',src:/\.pdf$/i.test(lastMatch.fname)?'outlook':'excel',file:base,sheet:(lastMatch.sheets||[]).join(' / '),header:'',keyCols:'',menu:'',tab:'',dataset:'',mode:'manual',active:true,note:'업로드 매칭으로 추가'}); save(d); editId=id; window.ingClearMatch(); window.renderIngestMap();
+    setTimeout(function(){ var e=document.getElementById('tab-ingest-map'); if(e) e.querySelector('.ing-editing')?.scrollIntoView({block:'center'}); },60); };
+
+  window.ingArea=function(a){ areaFilter=a; window.renderIngestMap(); };
+  window.ingAdd=function(){ if(!canEdit())return; var d=load(); var id='n'+(Math.max(0,...d.map(function(x){return parseInt((x.id||'').replace(/\D/g,''))||0;}))+1); d.unshift({id:id,area:areaFilter==='all'?'생산':areaFilter,src:'excel',file:'',sheet:'',header:'',keyCols:'',menu:'',tab:'',dataset:'',mode:'manual',active:true,note:''}); save(d); editId=id; window.renderIngestMap(); };
+  window.ingEdit=function(id){ editId=id; window.ingClearMatch&&window.ingClearMatch(); window.renderIngestMap(); setTimeout(function(){ document.querySelector('#ingWrap .ing-editing')?.scrollIntoView({block:'center'}); },50); };
+  window.ingCancel=function(){ editId=null; window.renderIngestMap(); };
+  window.ingDel=function(id){ if(!confirm('이 양식/연동 규칙을 삭제할까요?'))return; save(load().filter(function(x){return x.id!==id;})); editId=null; window.renderIngestMap(); };
+  window.ingToggle=function(id){ var d=load(); var r=d.find(function(x){return x.id===id;}); if(r){ r.active=!r.active; save(d); } if(lastMatch&&lastMatch.rule&&lastMatch.rule.id===id){ lastMatch.rule=r; renderMatch(); } window.renderIngestMap(); };
+  window.ingSave=function(id){ var d=load(); var r=d.find(function(x){return x.id===id;}); if(!r)return; ['area','src','file','sheet','header','keyCols','menu','tab','dataset','mode','note'].forEach(function(f){ var e=document.querySelector('#ingWrap [data-f="'+f+'"][data-id="'+id+'"]'); if(e) r[f]=e.value; }); save(d); editId=null; window.renderIngestMap(); };
+  window.ingReset=function(){ if(!canEdit())return; if(!confirm('연동/양식 규칙을 기본값으로 복원할까요?'))return; localStorage.removeItem(KEY); editId=null; window.ingClearMatch&&window.ingClearMatch(); window.renderIngestMap(); };
+
+  function srcBadge(s){ return s==='outlook'?'<span class="ing-badge ol">Outlook PDF</span>':'<span class="ing-badge xl">엑셀 업로드</span>'; }
+  function areaBadge(a){ return '<span class="ing-area a-'+esc(a)+'">'+esc(a)+'</span>'; }
+  window.renderIngestMap=function(){
+    ensureTab(); var d=load(); var ed=canEdit();
+    var fl=document.getElementById('ingFilter');
+    if(fl){ var chips=[['all','전체 ',d.length]].concat(AREAS.map(function(a){ return [a,a,d.filter(function(x){return x.area===a;}).length]; }));
+      fl.innerHTML=chips.map(function(c){ return '<button class="ing-fbtn'+(areaFilter===c[0]?' active':'')+'" onclick="ingArea(\''+c[0]+'\')">'+esc(c[1])+' <b>'+c[2]+'</b></button>'; }).join(''); }
+    var rows=d.filter(function(x){ return areaFilter==='all'||x.area===areaFilter; });
+    var wrap=document.getElementById('ingWrap'); if(!wrap) return;
+    var head='<tr><th>업무영역</th><th>소스</th><th>파일 / 시트</th><th>양식 (헤더행 · 키컬럼)</th><th>대상 화면</th><th>데이터셋</th><th>모드</th><th>상태</th>'+(ed?'<th class="ing-act">관리</th>':'')+'</tr>';
+    var body=rows.map(function(r){
+      if(r.id===editId){
+        var inp=function(f,ph){ return '<input data-f="'+f+'" data-id="'+r.id+'" value="'+esc(r[f]||'')+'" placeholder="'+ph+'" style="width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border-strong);border-radius:5px;font-family:inherit;margin-bottom:3px;">'; };
+        var ta=function(f,ph){ return '<textarea data-f="'+f+'" data-id="'+r.id+'" placeholder="'+ph+'" rows="2" style="width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border-strong);border-radius:5px;font-family:inherit;">'+esc(r[f]||'')+'</textarea>'; };
+        var sel=function(f,opts){ return '<select data-f="'+f+'" data-id="'+r.id+'" style="width:100%;font-size:11px;padding:4px;border:1px solid var(--border-strong);border-radius:5px;font-family:inherit;margin-bottom:3px;">'+opts.map(function(o){return '<option value="'+o[0]+'"'+(r[f]===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>'; };
+        return '<tr class="ing-editing"><td>'+sel('area',AREAS.map(function(a){return [a,a];}))+'</td><td>'+sel('src',[['excel','엑셀'],['outlook','Outlook']])+'</td><td>'+inp('file','파일 패턴(*.xlsx)')+inp('sheet','시트명')+'</td>'+
+          '<td>'+inp('header','헤더행')+ta('keyCols','키컬럼(· 구분)')+'</td><td>'+inp('menu','메뉴')+inp('tab','탭')+'</td><td>'+inp('dataset','데이터셋 키')+'</td><td>'+sel('mode',[['manual','수동'],['auto','자동']])+'</td><td>'+inp('note','비고')+'</td><td class="ing-act"><button class="bom-mini ok" onclick="ingSave(\''+r.id+'\')">저장</button><button class="bom-mini" onclick="ingCancel()">취소</button></td></tr>';
+      }
+      return '<tr'+(r.active?'':' class="ing-off"')+'><td>'+areaBadge(r.area)+'</td><td>'+srcBadge(r.src)+'</td>'+
+        '<td class="ing-file"><b>'+esc(r.file)+'</b>'+(r.sheet?'<div class="ing-sub">시트: '+esc(r.sheet)+'</div>':'')+'</td>'+
+        '<td class="ing-fmt"><div class="ing-hdr">헤더: '+esc(r.header||'-')+'</div><div class="ing-keys">키: '+esc(r.keyCols||'-')+'</div></td>'+
+        '<td><span class="ing-arrow">→</span> <b>'+esc(r.menu)+'</b><div class="ing-sub">'+esc(r.tab)+'</div></td>'+
+        '<td><code class="ing-ds">'+esc(r.dataset)+'</code></td>'+
+        '<td><span class="ing-mode '+(r.mode==='auto'?'auto':'man')+'">'+(r.mode==='auto'?'자동':'수동')+'</span></td>'+
+        '<td><span class="ing-st '+(r.active?'on':'off')+'"'+(ed?' onclick="ingToggle(\''+r.id+'\')" style="cursor:pointer"':'')+'>'+(r.active?'활성':'대기')+'</span></td>'+
+        (ed?'<td class="ing-act"><button class="bom-mini" onclick="ingEdit(\''+r.id+'\')">수정</button><button class="bom-mini del" onclick="ingDel(\''+r.id+'\')">삭제</button></td>':'')+
+        (r.note?'</tr><tr class="ing-note'+(r.active?'':' ing-off')+'"><td colspan="2"></td><td colspan="'+(ed?7:6)+'" class="ing-notec">비고 · '+esc(r.note)+'</td>':'')+'</tr>';
+    }).join('');
+    wrap.innerHTML='<div class="pi-scroll"><table class="pi-table ing-table"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+
+      '<div class="ing-legend"><b>업무영역마다 업로드 양식이 다릅니다.</b> 위 <b>업로드</b> 박스에 파일을 올리면 등록 양식과 자동 매칭·확인되고, 미매칭 시 새 양식으로 추가할 수 있습니다. 각 양식의 시트·헤더행·키컬럼은 <b>수정·저장</b>으로 관리(DB 설계 시 그대로 스키마로 활용).</div>';
+  };
+  function init(){ try{ ensureTab(); }catch(e){} }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+  setTimeout(init,800); setTimeout(init,1700);
+})();
+</script>
 </head>
 <body>
 
