@@ -657,6 +657,51 @@ function parseFLNSheet(ws, sheetName){
   return {sheet:sheetName, shipments, items, variants, setOrder, hasField:Object.fromEntries(FIELDS.map(f=>[f[0],colIdx[f[0]]!=null]))};
 }
 
+/* ---------- FLN R1 폴백 파서: 생산시트(품목) + 인보이스 LIST(선적) + PKL(품목CODE×BL 수량) ----------
+   현 R1 양식은 생산시트 우측에 전치 선적매트릭스(휴스턴 누적 SET + 송장컬럼)를 그대로 보존하므로
+   기본은 parseFLNSheet가 네이티브로 처리한다. 이 파서는 향후 매트릭스가 제거돼 선적이 PKL·인보이스 LIST로만
+   남는 경우의 폴백(parseFLNSheet가 선적 0건일 때만 작동). 동일 DATA 모델로 재구성. */
+function parseNewFLN(wbF){
+  const aoaOf=sn=>XLSX.utils.sheet_to_json(wbF.Sheets[sn],{header:1,defval:null,raw:true});
+  // 1) 생산시트(PJT 헤더 + 소요량) → 품목
+  const prodSheets=wbF.SheetNames.filter(sn=>{ const rows=aoaOf(sn); const hr=rows.findIndex(r=>r&&norm(r[0])==='PJT'); if(hr<0) return false; const labels=(rows[hr]||[]).map(c=>c==null?'':String(c).trim()); return labels.some(l=>norm(l)==='소요량'); });
+  if(!prodSheets.length) return [];
+  const projects=prodSheets.map(sn=>{
+    const rows=aoaOf(sn); const hr=rows.findIndex(r=>r&&norm(r[0])==='PJT');
+    const labels=(rows[hr]||[]).map(c=>c==null?'':String(c).trim()); const colIdx={};
+    for(let c=0;c<labels.length;c++){ const nl=norm(labels[c]); for(const [canon,aliases] of FIELDS){ if(aliases.some(a=>norm(a)===nl)){ colIdx[canon]=c; break; } } }
+    const nameCol=colIdx['품명']; const items=[];
+    for(let r=hr+1;r<rows.length;r++){ const row=rows[r]; if(!row) continue; const nm=nameCol!=null?row[nameCol]:null; if(nm==null||String(nm).trim()==='') continue;
+      const attrs={}; for(const [canon] of FIELDS){ const ci=colIdx[canon]; attrs[canon]=ci!=null?row[ci]:''; }
+      const codes=[attrs['최초 CODE'],attrs['변경 CODE'],attrs['변경 CODE 2']].map(norm).filter(Boolean);
+      items.push({sheet:sn, attrs, codes, qty:{}, id:sn+'|'+norm(attrs['최초 CODE'])+'|'+norm(attrs['품명'])});
+    }
+    return {sheet:sn, items, shipments:[], variants:[], setOrder:0, _isNew:true};
+  }).filter(p=>p.items.length);
+  if(!projects.length) return [];
+  // 2) 인보이스 LIST → 선적(BL/인보이스/ETD/도착/컨테이너수)
+  const invName=wbF.SheetNames.find(n=>/인보이스\s*LIST|INVOICE\s*LIST/i.test(n)); const allShip=[];
+  if(invName){ const ir=aoaOf(invName); let ihr=ir.findIndex(r=>r&&/^NO$/i.test(String(r[0]||''))&&r.some(c=>/^BL$/i.test(String(c||''))));
+    if(ihr>=0){ const IH=ir[ihr].map(c=>String(c==null?'':c).trim()); const ici=re=>IH.findIndex(h=>re.test(h));
+      const cBL=ici(/^BL$/),cInv=ici(/^INV/i),cPJT=ici(/^PJT$/),cGub=ici(/^구분$/),cEtd=ici(/ETD/i),cArr=ici(/ARRIVAL/i),cCq=ici(/컨테이너/);
+      for(let r=ihr+1;r<ir.length;r++){ const row=ir[r]; if(!row) continue; const bl=String(row[cBL]==null?'':row[cBL]).trim(); if(!/^[A-Z]/.test(bl)) continue;
+        allShip.push({ key:'inv#'+r, bl, invoice:cInv>=0?String(row[cInv]||'').trim():'', pjt:cPJT>=0?String(row[cPJT]||'').trim():'', gubun:cGub>=0?String(row[cGub]||'').trim():'',
+          etd:parseDate(cEtd>=0?row[cEtd]:null), eta:parseDate(cArr>=0?row[cArr]:null), cds:0, data:0, ctype:'', cqty:numv(cCq>=0?row[cCq]:0) }); } } }
+  // 3) PKL 누적관리 → 품목CODE × BL 수량 + BL별 PJT
+  const pklName=wbF.SheetNames.find(n=>/PKL/i.test(n)); const codeBL={}, blPjt={};
+  if(pklName){ const pr=aoaOf(pklName); let phr=pr.findIndex(r=>r&&String(r[0]).trim()==='No'&&r.some(c=>/MES/i.test(String(c||'')))); if(phr<0) phr=pr.findIndex(r=>r&&r.some(c=>/MES\s*CODE/i.test(String(c||''))));
+    if(phr>=0){ const PH=pr[phr].map(c=>String(c==null?'':c).trim()); const pci=re=>PH.findIndex(h=>re.test(h));
+      const pCode=pci(/MES\s*CODE/i),pQty=pci(/^Qty/i),pBL=pci(/^BL$/),pPJT=pci(/^PJT$/);
+      if(pCode>=0&&pBL>=0) for(let r=phr+1;r<pr.length;r++){ const row=pr[r]; if(!row) continue; const bl=String(row[pBL]==null?'':row[pBL]).trim(); const code=norm(row[pCode]); if(!/^[A-Z]/.test(bl)||!code) continue;
+        (codeBL[code]=codeBL[code]||{})[bl]=(codeBL[code][bl]||0)+numv(pQty>=0?row[pQty]:0); if(pPJT>=0&&!blPjt[bl]) blPjt[bl]=String(row[pPJT]||'').trim(); } } }
+  // 4) 선적을 프로젝트에 배정(PJT 매칭) + item.qty[선적]=PKL CODE×BL 수량
+  const pkOf=name=>{ const n=(name||'').toLowerCase(); if(/torch/.test(n))return 'torch'; if(/zeta/.test(n))return 'zeta'; if(/athos|duke|gsp2000/.test(n))return 'gsp2000'; if(/bright/.test(n))return 'bright'; return n.replace(/[^a-z0-9]/g,'').slice(0,7); };
+  projects.forEach(p=>{ p._pk=pkOf(p.sheet); });
+  allShip.forEach(s=>{ const pk=pkOf(s.pjt||blPjt[s.bl]||''); const p=projects.find(x=>x._pk===pk)||projects[0]; s.sheet=p.sheet; p.shipments.push(s); });
+  projects.forEach(p=>{ p.items.forEach(it=>{ it.codes.forEach(c=>{ const m=codeBL[c]; if(m){ for(const bl in m){ const sh=p.shipments.find(s=>s.bl===bl); if(sh) it.qty[sh.key]=(it.qty[sh.key]||0)+m[bl]; } } }); }); });
+  return projects.filter(p=>p.shipments.length || p.items.length);
+}
+
 /* ---------- GSP schedule parser (sheet 1) ---------- */
 function parseGSP(ws){
   const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
@@ -700,6 +745,22 @@ function expandBL(raw){
     else out.push(suf);
   }
   return [...new Set(out)];
+}
+
+/* 일정표(보고용) 자동 탐색: 두 파일에서 각각 가장 완전한(=BL 많은) 일정표를 찾아 더 완전한 쪽 채택.
+   FLN 미주향 일정 R1(고객공유)의 일정표가 구 GSP 제품수출현황 일정표를 대체(더 최신·BL 많음)하므로 동률 시 FLN 우선. */
+function resolveSchedule(wbG, wbF){
+  function findSched(wb){
+    if(!wb) return null;
+    const named=wb.SheetNames.filter(n=>/일정표|보고용/.test(n));
+    const cand=[...named, ...wb.SheetNames.filter(n=>!named.includes(n))];
+    let best=null;
+    for(const s of cand){ try{ const m=parseGSP(wb.Sheets[s]); if(m && Object.keys(m).length){ if(!best||Object.keys(m).length>Object.keys(best).length) best=m; } }catch(e){} }
+    return best;
+  }
+  const f=findSched(wbF), g=findSched(wbG);   // FLN(신) 우선
+  if(f&&g) return Object.keys(f).length>=Object.keys(g).length? f : g;
+  return f||g||{};
 }
 
 /* ---------- PKL 누적관리 파서: 실제 공장도착(ATA Factory) 기준 품목별 도착 수량 ---------- */
@@ -849,12 +910,15 @@ async function build(){
     } else { err.textContent='FLN 미주향 일정 파일(시트1~3 매트릭스)을 인식하지 못했습니다. 두 파일을 다시 확인하세요.'; building=false; return; }
     DATA.rawF=rawF; DATA.rawG=rawG;
     // FLN sheets 1~3 (first three)
-    const projects=[];
+    let projects=[];
     for(let i=0;i<Math.min(3,wbF.SheetNames.length);i++){
       const p=parseFLNSheet(wbF.Sheets[wbF.SheetNames[i]], wbF.SheetNames[i]);
       if(p && p.shipments.length) projects.push(p);
     }
-    if(!projects.length){ err.textContent='FLN 시트1~3에서 선적 데이터를 찾지 못했습니다.'; building=false; return; }
+    let newFmt=false;
+    if(!projects.length){ projects=parseNewFLN(wbF); newFmt=projects.length>0; }   // 신 FLN R1 양식 (생산시트+PKL+인보이스 LIST)
+    if(!projects.length){ err.textContent='FLN 파일에서 선적/품목 데이터를 찾지 못했습니다. (구 전치매트릭스 / 신 R1 양식 모두 불인식)'; building=false; return; }
+    DATA.newFmt=newFmt;
     // 프로젝트별 세트 주문수량: 변형(BOM 컬럼) 수량 합. 변형 없으면 소요량 최빈값으로 폴백.
     projects.forEach(p=>{
       if(!(p.setOrder>0)){
@@ -887,7 +951,7 @@ async function build(){
         it.transitSET=Math.max(0, shipSet-it.arrivedSET);
       });
     });
-    DATA.gsp=parseGSP(wbG.Sheets[wbG.SheetNames[0]]);
+    DATA.gsp=resolveSchedule(wbG, wbF);
     DATA.blList=[...new Set(DATA.shipments.map(s=>s.bl))].sort();
     DATA.validation=validate();
     // default month = month closest to today that has 출발/도착 일정
